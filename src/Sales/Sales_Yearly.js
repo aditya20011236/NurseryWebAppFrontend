@@ -20,8 +20,9 @@ function SL_Yearly() {
     try {
       const startOfYear = `${selectedYear}-01-01`;
       const endOfYear = `${selectedYear}-12-31`;
-
-      const response = await axios.get('http://localhost:8080/api/invoices/getDataBetweenDates', {
+     
+      // const response = await axios.get('http://localhost:8080/api/invoices/getDataBetweenDates', {
+        const response = await axios.get('http:// 16.170.242.6:8080/api/invoices/getDataBetweenDates', {
         params: {
           startDate: startOfYear,
           endDate: endOfYear

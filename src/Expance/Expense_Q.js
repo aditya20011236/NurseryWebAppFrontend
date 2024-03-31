@@ -38,7 +38,8 @@ function Ex_Q() {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get('http://localhost:8080/api/expenses/getDataBetweenDates', {
+      // const response = await axios.get('http://localhost:8080/api/expenses/getDataBetweenDates', {
+      const response = await axios.get('http:// 16.170.242.6:8080/api/expenses/getDataBetweenDates', {
         params: {
           startDate,
           endDate

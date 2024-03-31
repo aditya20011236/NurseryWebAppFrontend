@@ -29,7 +29,8 @@ function EditProduct() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await axios.put(`http://localhost:8080/products/${id}`, product);
+            // await axios.put(`http://localhost:8080/products/${id}`, product);
+            await axios.put(`http://16.170.242.6:8080/products/${id}`, product);
             alert('Product updated successfully');
             // Reset form fields
             setProduct({
@@ -44,10 +45,11 @@ function EditProduct() {
             console.error('Error updating product:', error);
         }
     };
-    
+   
     const loadProduct = async () => {
         try {
-            const response = await axios.get(`http://localhost:8080/products/${id}`);
+            // const response = await axios.get(`http://localhost:8080/products/${id}`);
+            const response = await axios.get(`http://16.170.242.6:8080/products/${id}`);
             setProduct(response.data);
         } catch (error) {
             console.error('Error fetching product:', error);

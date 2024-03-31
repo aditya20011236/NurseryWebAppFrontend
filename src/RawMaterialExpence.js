@@ -58,8 +58,9 @@ function AddExpense() {
         grandTotal: total.toFixed(2), 
         materials: formattedMaterials
       };
-
-      const response = await axios.post("http://localhost:8080/api/expenses", expenseData);
+     
+      // const response = await axios.post("http://localhost:8080/api/expenses", expenseData);
+      const response = await axios.post("http:// 16.170.242.6:8080/api/expenses", expenseData);
       console.log("Response:", response.data);
 
       // Show popup after successfully adding the expense

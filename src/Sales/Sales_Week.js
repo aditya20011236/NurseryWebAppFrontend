@@ -88,10 +88,11 @@ function Sl_week() {
       fetchData();
     }
   }, [startDate, endDate, selectedWeek]);
-
+  
   const fetchData = async () => {
     try {
-      const response = await axios.get('http://localhost:8080/api/invoices/getDataBetweenDates', {
+      // const response = await axios.get('http://localhost:8080/api/invoices/getDataBetweenDates', {
+        const response = await axios.get('http://16.170.242.6:8080/api/invoices/getDataBetweenDates', {
         params: {
           startDate,
           endDate

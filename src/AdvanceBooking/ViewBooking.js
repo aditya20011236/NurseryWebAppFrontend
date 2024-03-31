@@ -8,10 +8,11 @@ function ShowBooking() {
     useEffect(() => {
         loadCustomers();
     }, []);
-
+   
     const loadCustomers = async () => {
         try {
-            const result = await axios.get("http://localhost:8080/api/customers");
+            // const result = await axios.get("http://localhost:8080/api/customers");
+            const result = await axios.get("http:// 16.170.242.6:8080/api/customers");
             setCustomers(result.data);
         } catch (error) {
             console.error('Error loading customers:', error);
@@ -28,7 +29,8 @@ function ShowBooking() {
 
     const handleDelete = async (customerId) => {
         try {
-            await axios.delete(`http://localhost:8080/api/customers/${customerId}`);
+            // await axios.delete(`http://localhost:8080/api/customers/${customerId}`);
+            await axios.delete(`http:// 16.170.242.6:8080/api/customers/${customerId}`);
             loadCustomers();
         } catch (error) {
             console.error('Error deleting customer:', error);
@@ -37,10 +39,8 @@ function ShowBooking() {
 
     return (
         <div className="flex flex-col h-screen">
-            <nav className="bg-blue-500 w-full p-4">
-                <div className="flex justify-between items-center">
-                    <div className="text-white font-bold text-xl">Advance Orders</div>
-                </div>
+            <nav className="bg-white w-full p-4 flex justify-center items-center">
+                <div className="text-gray-800 font-bold text-xl">Advance Orders</div>
             </nav>
             <div className="flex">
                 <Menu />
@@ -81,7 +81,7 @@ function ShowBooking() {
                                             <td className="px-4 py-2">{formatCurrency(customer.advancePayment)}</td>
                                             <td className="px-4 py-2">{formatCurrency(customer.remainingPayment)}</td>
                                             <td className="px-4 py-2">
-                                                <button className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" onClick={() => handleDelete(customer.id)}>Delete</button>
+                                                <button className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" onClick={() => handleDelete(customer.id)}>Deliverd</button>
                                             </td>
                                         </tr>
                                     ))}

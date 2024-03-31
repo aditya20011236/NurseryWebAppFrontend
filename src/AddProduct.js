@@ -24,7 +24,9 @@ function AddProduct() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await axios.post("http://localhost:8080/products", product);
+            // await axios.post("http://localhost:8080/products", product);
+            await axios.post("http://16.170.242.6:8080/products", product);
+       
             alert('Product added successfully');
             // Reset form fields
             setProduct({

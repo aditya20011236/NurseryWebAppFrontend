@@ -22,9 +22,10 @@ function PL_Yearly() {
     try {
       const startOfYear = `${selectedYear}-01-01`;
       const endOfYear = `${selectedYear}-12-31`;
-
+     
       // Fetch expenses data for the selected year
-      const expensesResponse = await axios.get('http://localhost:8080/api/expenses/expenses/getDataBetweenDates/date', {
+      // const expensesResponse = await axios.get('http://localhost:8080/api/expenses/expenses/getDataBetweenDates/date', {
+        const expensesResponse = await axios.get('http:// 16.170.242.6:8080/api/expenses/expenses/getDataBetweenDates/date', {
         params: {
           startDate: startOfYear,
           endDate: endOfYear
@@ -37,7 +38,8 @@ function PL_Yearly() {
       setTotalExpenses(totalExp);
 
       // Fetch sales data for the entire year
-      const salesResponse = await axios.get('http://localhost:8080/api/invoices/getDataBetweenDates/date', {
+      // const salesResponse = await axios.get('http://localhost:8080/api/invoices/getDataBetweenDates/date', {
+        const salesResponse = await axios.get('http://16.170.242.6:8080/api/invoices/getDataBetweenDates/date', {
         params: {
           startDate: startOfYear,
           endDate: endOfYear

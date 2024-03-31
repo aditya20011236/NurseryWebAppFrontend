@@ -1,11 +1,8 @@
-
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import Header from "./Header";
 import AddProduct from "./AddProduct";
-import { BrowserRouter as Router, Routes, Route, BrowserRouter } from 'react-router-dom';
-import Home from "./Home";
-
 import Invoice from "./Invoice";
-
 import Employeeexpence from "./Employeeexpence";
 import DemoTable from "./RawMaterialExpence";
 import ExW from "./Pages/ExW";
@@ -13,7 +10,6 @@ import SD from "./Pages/SD";
 import SW from "./Pages/SW";
 import SQ from "./Pages/SQ";
 import SY from "./Pages/SY";
-
 import ExD from "./Pages/ExD";
 import ExM from "./Pages/ExM";
 import ExQ from "./Pages/ExQ";
@@ -29,53 +25,63 @@ import AddExpense from "./RawMaterialExpence";
 import AdvanceBooking from "./AdvanceBooking/AdvanceBooking";
 import ShowBooking from "./AdvanceBooking/ViewBooking";
 import EditProduct from "./Updateproduct";
+import UserForm from "./RegistrationLogin/register";
+import Home from "./RegistrationLogin/Home";
+import Login from "./RegistrationLogin/login";
+import AdminRegForm from "./RegistrationLogin/register";
+import EmployeeRegForm from "./RegistrationLogin/EmployeeRegister";
+import EmpLogin from "./RegistrationLogin/Employeelogin";
+import EmpInvoice from "./empinvoice";
+import AvailableProduct from "./AvalableProduct";
 
+function HeaderRouter() {
+  const location = useLocation();
+  const hideHeader = ['/admin-login', '/register', '/emp_register', '/employee-login'].includes(location.pathname);
 
-// import RawMaterialExpence from "./RawMaterialExpence";
-
-
+  return !hideHeader && <Header />;
+}
 
 function App() {
   return (
     <>
-   
       <Router>
-        <Header />
-      
+        <HeaderRouter />
+
         <Routes>
-          <Route path="/addproduct" element={<AddProduct></AddProduct>}></Route>
+          <Route path="/addproduct" element={<AddProduct />} />
           <Route path="/editproduct/:id" element={<EditProduct />} />
-          <Route path="/home" element={<Home></Home>}></Route>
-          <Route path="/" element={<Invoice></Invoice>}></Route>
-          {/* <Route path="/addexpance" element={<Employeeexpence/>}></Route> */}
-          
-          <Route path="/rawmexpence" element={<AddExpense/>}></Route>
-          <Route path="/SD" element={<SD/>}></Route>
-          <Route path="/SW" element={<SW/>}></Route>
-          <Route path="/SM" element={<SM/>}></Route>
-          <Route path="/SQ" element={<SQ/>}></Route>
-          <Route path="/SY" element={<SY/>}></Route>
-          <Route path="/ExD" element={<ExD/>}></Route>
-          <Route path="/ExW" element={<ExW/>}></Route>
-          <Route path="/ExM" element={<ExM/>}></Route>
-          <Route path="/ExQ" element={<ExQ/>}></Route>
-          <Route path="/ExY" element={<ExY/>}></Route>
-          <Route path="/PLD" element={<PLD/>}></Route>
-          <Route path="/PLW" element={<PLW/>}></Route>
-          <Route path="/PLM" element={<PLM/>}></Route>
-          <Route path="/PLQ" element={<PLQ/>}></Route>
-          <Route path="/PLY" element={<PLY/>}></Route>
-          <Route path="/advancebook" element={<AdvanceBooking/>}></Route>
-          <Route path="/showbooking" element={<ShowBooking/>}></Route>
-          <Route path="/updateproduct/:id" element={<EditProduct/>}></Route>
+          <Route path="/home" element={<AvailableProduct />} />
+          <Route path="/addexpance" element={<Employeeexpence />} />
+          <Route path="/rawmexpence" element={<AddExpense />} />
+          <Route path="/SD" element={<SD />} />
+          <Route path="/SW" element={<SW />} />
+          <Route path="/SM" element={<SM />} />
+          <Route path="/SQ" element={<SQ />} />
+          <Route path="/SY" element={<SY />} />
+          <Route path="/ExD" element={<ExD />} />
+          <Route path="/ExW" element={<ExW />} />
+          <Route path="/ExM" element={<ExM />} />
+          <Route path="/ExQ" element={<ExQ />} />
+          <Route path="/ExY" element={<ExY />} />
+          <Route path="/PLD" element={<PLD />} />
+          <Route path="/PLW" element={<PLW />} />
+          <Route path="/PLM" element={<PLM />} />
+          <Route path="/PLQ" element={<PLQ />} />
+          <Route path="/PLY" element={<PLY />} />
+          <Route path="/advancebook" element={<AdvanceBooking />} />
+          <Route path="/showbooking" element={<ShowBooking />} />
+          <Route path="/updateproduct/:id" element={<EditProduct />} />
+          <Route path="/" element={<Home />} />
+          <Route path="/admin-login" element={<Login />} />
+          <Route path="/invoice" element={<Invoice />} />
+          <Route path="/register" element={<AdminRegForm />} />
+          <Route path="/emp_register" element={<EmployeeRegForm />} />
+          <Route path="/employee-login" element={<EmpLogin />} />
+          <Route path="/empinvoice" element={<EmpInvoice />} />
         </Routes>
       </Router>
-        
-        </> 
+    </>
   );
 }
 
 export default App;
-
-
-

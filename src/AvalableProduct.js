@@ -6,7 +6,7 @@ import Menu from './Sidebar';
 
 
 
-function Home() {
+function AvailableProduct() {
     const [products, setProducts] = useState([]);
     const [updateProductId, setUpdateProductId] = useState(null);
 
@@ -16,7 +16,8 @@ function Home() {
 
     const loadProducts = async () => {
         try {
-            const result = await axios.get("http://localhost:8080/products");
+            // const result = await axios.get("http://localhost:8080/products");
+            const result = await axios.get("http://16.170.242.6:8080/products");
             setProducts(result.data);
         } catch (error) {
             console.error('Error loading products:', error);
@@ -94,4 +95,4 @@ function Home() {
     );
 }
 
-export default Home;
+export default AvailableProduct;

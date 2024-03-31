@@ -23,7 +23,7 @@ function Ex_Month() {
     { name: 'November', days: 30, numerical: '11' },
     { name: 'December', days: 31, numerical: '12' }
   ];
-  const years = Array.from({ length: 6}, (_, i) => 2022 + i); // Generate an array of years from 2000 to 2100
+  const years = Array.from({ length: 6 }, (_, i) => 2022 + i); // Generate an array of years from 2000 to 2100
 
   const handleYearChange = (event) => {
     setSelectedYear(event.target.value);
@@ -58,7 +58,8 @@ function Ex_Month() {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get('http://localhost:8080/api/expenses/getDataBetweenDates', {
+      // const response = await axios.get('http://localhost:8080/api/expenses/getDataBetweenDates', {
+      const response = await axios.get('http:// 16.170.242.6:8080/api/expenses/getDataBetweenDates', {
         params: {
           startDate,
           endDate

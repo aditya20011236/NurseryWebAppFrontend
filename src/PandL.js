@@ -255,7 +255,8 @@ function PandL() {
 
   const fetchData = async () => {
     try {
-      const salesResponse = await axios.get('http://localhost:8080/api/invoices/getDataBetweenDates', {
+      // const salesResponse = await axios.get('http://localhost:8080/api/invoices/getDataBetweenDates', {
+        const salesResponse = await axios.get('http://16.170.242.6:8080/api/invoices/getDataBetweenDates', {
         params: {
           startDate,
           endDate
@@ -270,7 +271,8 @@ function PandL() {
     }
 
     try {
-      const expenseResponse = await axios.get('http://localhost:8080/api/expenses/getDataBetweenDates', {
+      // const expenseResponse = await axios.get('http://localhost:8080/api/expenses/getDataBetweenDates', {
+        const expenseResponse = await axios.get('http://16.170.242.6:8080/api/expenses/getDataBetweenDates', {
         params: {
           startDate,
           endDate

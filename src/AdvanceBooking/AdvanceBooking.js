@@ -1,11 +1,10 @@
- 
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Menu from '../Sidebar';
 
 function AdvanceBooking() {
   const [id, setId] = useState('');
-  const [plants, setPlants] = useState([]);
+  const [products, setProducts] = useState([]);
   const [formData, setFormData] = useState({
     date: '',
     customerName: '',
@@ -19,6 +18,7 @@ function AdvanceBooking() {
 
   useEffect(() => {
     generateId();
+    fetchProducts();
   }, []);
 
   const generateId = () => {
@@ -26,10 +26,27 @@ function AdvanceBooking() {
     setId(newId);
   };
 
+  const fetchProducts = async () => {
+    try {
+      // const response = await axios.get('http://localhost:8080/products');
+      const response = await axios.get('http://16.170.242.6:8080/products');
+      
+      setProducts(response.data);
+    } catch (error) {
+      console.error('Error fetching products:', error);
+    }
+  };
+
   const handleInputChange = (index, event) => {
     const { name, value } = event.target;
     const updatedPlants = [...formData.plants];
     updatedPlants[index][name] = value;
+    if (name === 'plantName') {
+      const selectedProduct = products.find(product => product.productName === value);
+      if (selectedProduct) {
+        updatedPlants[index].price = selectedProduct.sellingPrice;
+      }
+    }
     updatedPlants[index].totalAmount = (parseFloat(updatedPlants[index].quantity) * parseFloat(updatedPlants[index].price)).toFixed(2);
     setFormData({ ...formData, plants: updatedPlants });
   };
@@ -63,7 +80,8 @@ function AdvanceBooking() {
       const grandTotal = calculateTotal();
       const remainingPayment = calculateRemainingPayment();
       const dataWithId = { ...formData, id, grandTotal, remainingPayment };
-      await axios.post('http://localhost:8080/api/customers', dataWithId);
+      // await axios.post('http://localhost:8080/api/customers', dataWithId);
+      await axios.post('http://16.170.242.6:8080/api/customers', dataWithId);
       alert('Order Places Successfully!');
     } catch (error) {
       console.error('Error submitting Order:', error);
@@ -107,11 +125,22 @@ function AdvanceBooking() {
             <div key={index} className="grid grid-cols-4 gap-4 mb-6">
               <div>
                 <label htmlFor={`plantName${index}`} className="block text-gray-700 text-sm font-bold mb-2">Plant Name</label>
-                <input type="text" className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id={`plantName${index}`} name="plantName" value={plant.plantName} onChange={(e) => handleInputChange(index, e)} />
+                <select 
+                  className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  id={`plantName${index}`} 
+                  name="plantName" 
+                  value={plant.plantName} 
+                  onChange={(e) => handleInputChange(index, e)}
+                >
+                  <option value="">Select a product</option>
+                  {products.map(product => (
+                    <option key={product.id} value={product.productName}>{product.productName}</option>
+                  ))}
+                </select>
               </div>
               <div>
                 <label htmlFor={`price${index}`} className="block text-gray-700 text-sm font-bold mb-2">Price</label>
-                <input type="number" className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id={`price${index}`} name="price" value={plant.price} onChange={(e) => handleInputChange(index, e)} />
+                <input type="number" className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id={`price${index}`} name="price" value={plant.price} onChange={(e) => handleInputChange(index, e)} readOnly />
               </div>
               <div>
                 <label htmlFor={`quantity${index}`} className="block text-gray-700 text-sm font-bold mb-2">Quantity</label>
