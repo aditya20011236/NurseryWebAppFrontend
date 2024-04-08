@@ -1,92 +1,4 @@
 
-// import React, { useState, useEffect } from 'react';
-// import axios from 'axios';
-// import jsPDF from 'jspdf';
-// import 'jspdf-autotable';
-// import Logo from './Logo.png';
-// import SignatureImage from './Signpdf.jpg';
-// import { v4 as uuidv4 } from 'uuid';
-// import Menu from './Sidebar';
-
-// function Invoice() {
-//   const [invoiceNo, setInvoiceNo] = useState(0);
-//   const [productsList, setProductsList] = useState([]);
-//   const [formData, setFormData] = useState({
-//     customerName: '',
-//     customerAddress: '',
-//     invoiceNo: '',
-//     date: '',
-//     products: [{
-//       srNo: 1,
-//       productName: '',
-//       price: '',
-//       quantity: '',
-//       total: ''
-//     }],
-//     amountPaid: '',
-//     remainingAmount: '',
-//     paymentMode: '',
-//     discount: ''
-//   });
-
-//   useEffect(() => {
-//     generateInvoiceNo(); // Generate invoice number on component mount
-//     fetchProducts();
-//   }, []);
-
-//   const generateInvoiceNo = () => {
-//     let latestInvoiceNo = localStorage.getItem('latestInvoiceNo');
-//     if (!latestInvoiceNo) {
-//       latestInvoiceNo = 0;
-//     }
-//     const newInvoiceNo = parseInt(latestInvoiceNo, 10) + 1;
-//     localStorage.setItem('latestInvoiceNo', newInvoiceNo);
-//     setInvoiceNo(newInvoiceNo);
-//   };
-
-//   const fetchProducts = async () => {
-//     try {
-//       const response = await axios.get('http://localhost:8080/products');
-//       setProductsList(response.data);
-//     } catch (error) {
-//       console.error('Error fetching products:', error);
-//     }
-//   };
-//   const handleProductSelect = (index, productId) => {
-//     const products = [...formData.products];
-//     const selectedProduct = productsList.find(product => product.id === parseInt(productId));
-//     if (selectedProduct) {
-//       products[index]['productName'] = selectedProduct.productName;
-//       products[index]['price'] = selectedProduct.sellingPrice;
-//       setFormData(prevState => ({ ...prevState, products }));
-//     }
-//   };
-//   // const handleInputChange = (index, event) => {
-//   //   const { name, value } = event.target;
-//   //   const products = [...formData.products];
-//   //   products[index][name] = value;
-//   //   setFormData({ ...formData, products });
-//   // };
-//   const handleInputChange = (index, event) => {
-//     const { name, value } = event.target;
-//     const products = [...formData.products];
-//     let total = 0;
-
-//     if (name === 'quantity') {
-//       products[index][name] = value;
-//       const quantity = parseInt(value);
-//       const price = parseFloat(products[index]['price']);
-
-//       if (!isNaN(quantity) && !isNaN(price)) {
-//         total = (quantity * price).toFixed(2);
-//       }
-//     } else {
-//       products[index][name] = value;
-//     }
-
-//     products[index]['total'] = total;
-//     setFormData(prevState => ({ ...prevState, products }));
-//   };
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import jsPDF from 'jspdf';
@@ -135,8 +47,8 @@ function EmpInvoice() {
   
   const fetchProducts = async () => {
     try {
-      // const response = await axios.get('http://localhost:8080/products');
-      const response = await axios.get('http://16.170.242.6:8080/products');
+      const response = await axios.get('http://localhost:8080/products');
+      // const response = await axios.get('http://16.170.242.6:8080/products');
       setProductsList(response.data);
     } catch (error) {
       console.error('Error fetching products:', error);
@@ -245,8 +157,8 @@ function EmpInvoice() {
     e.preventDefault();
     try {
       const invoiceData = { ...formData, invoiceNo };
-      // await axios.post('http://localhost:8080/api/invoices', formData);
-      await axios.post('http://16.170.242.6:8080/api/invoices', formData);
+      await axios.post('http://localhost:8080/api/invoices', formData);
+      // await axios.post('http://16.170.242.6:8080/api/invoices', formData);
       alert('Invoice submitted successfully!');
     } catch (error) {
       console.error('Error submitting invoice:', error);

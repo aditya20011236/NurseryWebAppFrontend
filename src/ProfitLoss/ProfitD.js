@@ -23,8 +23,8 @@ function PL_Daily() {
       const startDate = selectedDate;
       const endDate = selectedDate;
      
-      // const response = await axios.get('http://localhost:8080/api/expenses/expenses/getDataBetweenDates/date', {
-        const response = await axios.get('http:// 16.170.242.6:8080/api/expenses/expenses/getDataBetweenDates/date', {
+      const response = await axios.get('http://localhost:8080/api/expenses/expenses/getDataBetweenDates/date', {
+        // const response = await axios.get('http:// 16.170.242.6:8080/api/expenses/expenses/getDataBetweenDates/date', {
         params: {
           startDate,
           endDate
@@ -43,8 +43,8 @@ function PL_Daily() {
       const startDate = selectedDate;
       const endDate = selectedDate;
       
-      // const response = await axios.get('http://localhost:8080/api/invoices/getDataBetweenDates/date', {
-        const response = await axios.get('http://16.170.242.6:8080/api/invoices/getDataBetweenDates/date', {
+      const response = await axios.get('http://localhost:8080/api/invoices/getDataBetweenDates/date', {
+        // const response = await axios.get('http://16.170.242.6:8080/api/invoices/getDataBetweenDates/date', {
         params: {
           startDate,
           endDate

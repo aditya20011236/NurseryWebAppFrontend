@@ -17,7 +17,7 @@ function Employeeexpence() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://16.170.242.6:8080/api/ex', formData);
+      await axios.post('http://localhost:8080/api/ex', formData);
       alert('Expense submitted successfully!');
     } catch (error) {
       console.error('Error submitting expense:', error);

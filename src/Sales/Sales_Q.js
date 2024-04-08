@@ -38,8 +38,8 @@ function Sl_Q() {
  
   const fetchData = async () => {
     try {
-      // const response = await axios.get('http://localhost:8080/api/invoices/getDataBetweenDates', {
-        const response = await axios.get('http:// 16.170.242.6:8080/api/invoices/getDataBetweenDates', {
+      const response = await axios.get('http://localhost:8080/api/invoices/getDataBetweenDates', {
+        // const response = await axios.get('http:// 16.170.242.6:8080/api/invoices/getDataBetweenDates', {
         params: {
           startDate,
           endDate
@@ -91,9 +91,9 @@ function Sl_Q() {
             <tbody className="vh-[20%] overflow-y-auto">
               {ExpanceData.map((expense) => (
                 <tr key={expense.id}>
-                  <td className="border px-4 py-2">{expense.id}</td>
-                  <td className="border px-4 py-2">{expense.date}</td>
-                  <td className="border px-4 py-2">{expense.grandtotal}</td>
+                  <td className="border px-4 py-2 text-center">{expense.id}</td>
+                  <td className="border px-4 py-2 text-center">{expense.date}</td>
+                  <td className="border px-4 py-2 text-center">{expense.grandtotal}</td>
                 </tr>
               ))}
             </tbody>

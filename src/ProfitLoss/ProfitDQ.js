@@ -33,16 +33,16 @@ function PL_Q() {
       const startDate = `${selectedYear}-${quarterStartMonth.toString().padStart(2, '0')}-${startDay}`;
       const endDate = `${selectedYear}-${quarterEndMonth.toString().padStart(2, '0')}-${endDay}`;
       
-      // const expensesResponse = await axios.get('http://localhost:8080/api/expenses/expenses/getDataBetweenDates/date', {
-        const expensesResponse = await axios.get('http://16.170.242.6:8080/api/expenses/expenses/getDataBetweenDates/date', {
+      const expensesResponse = await axios.get('http://localhost:8080/api/expenses/expenses/getDataBetweenDates/date', {
+        // const expensesResponse = await axios.get('http://16.170.242.6:8080/api/expenses/expenses/getDataBetweenDates/date', {
         params: {
           startDate,
           endDate
         }
       });
      
-      // const salesResponse = await axios.get('http://localhost:8080/api/invoices/getDataBetweenDates/date', {
-        const salesResponse = await axios.get('http:// 16.170.242.6:8080/api/invoices/getDataBetweenDates/date', {
+      const salesResponse = await axios.get('http://localhost:8080/api/invoices/getDataBetweenDates/date', {
+        // const salesResponse = await axios.get('http:// 16.170.242.6:8080/api/invoices/getDataBetweenDates/date', {
         params: {
           startDate,
           endDate

@@ -13,7 +13,7 @@ function EmpMenu() {
       <Sidebar className=' h-full  ' aria-label="Sidebar with multi-level dropdown example">
         <Sidebar.Items>
           <Sidebar.ItemGroup>
-            <Link ><Sidebar.Item icon={HiShoppingCart } as={Link} to="/" className="font-bold"> INVOICE</Sidebar.Item></Link>
+            <Link ><Sidebar.Item icon={HiShoppingCart } as={Link} to="/empinvoice" className="font-bold"> INVOICE</Sidebar.Item></Link>
 
 
             <Sidebar.Collapse icon={HiShoppingBag} label="PRODUCTS " className="font-bold">

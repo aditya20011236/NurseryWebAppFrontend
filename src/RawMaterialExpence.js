@@ -9,15 +9,17 @@ function AddExpense() {
   const [showPopup, setShowPopup] = useState(false);
 
   const addExpense = () => {
+    const currentDate = new Date().toISOString().split('T')[0]; // Get today's date
     const newMaterial = {
       type: "",
       materialName: "",
       pricePerUnit: 0,
       quantity: 0,
-      total: 0
+      total: 0,
+      date: currentDate // Set the default date to today's date
     };
     setMaterials([...materials, newMaterial]);
-    calculateTotal([...materials, newMaterial]); 
+    calculateTotal([...materials, newMaterial]);
   };
 
   const updateMaterial = (index, field, value) => {
@@ -27,7 +29,7 @@ function AddExpense() {
       updatedMaterials[index].total = parseFloat(updatedMaterials[index].pricePerUnit) * parseFloat(updatedMaterials[index].quantity);
     }
     setMaterials(updatedMaterials);
-    calculateTotal(updatedMaterials); 
+    calculateTotal(updatedMaterials);
   };
 
   const calculateTotal = (updatedMaterials) => {
@@ -37,7 +39,6 @@ function AddExpense() {
     });
     setTotal(total);
   };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -46,36 +47,37 @@ function AddExpense() {
         pricePerUnit: material.pricePerUnit,
         quantity: material.quantity,
         total: material.total,
-        type: material.type 
+        type: material.type,
+        expenseDetails: material.expenseDetails // Including expenseDetails
       }));
-
-      const date = new Date();
-      const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
-      
+  
+      const formattedDate = materials.length > 0 ? materials[0].date : new Date().toISOString().split('T')[0];
+  
       const expenseData = {
         date: formattedDate,
         expenseType: expenseType,
-        grandTotal: total.toFixed(2), 
-        materials: formattedMaterials
+        grandTotal: total.toFixed(2),
+        materials: formattedMaterials,
+        expenseDetails: materials.map(material => material.expenseDetails), // Assuming you have an expenseDetails field in your materials
+        // You can add more fields here if needed
       };
-     
-      // const response = await axios.post("http://localhost:8080/api/expenses", expenseData);
-      const response = await axios.post("http:// 16.170.242.6:8080/api/expenses", expenseData);
+  
+      const response = await axios.post("http://localhost:8080/api/expenses", expenseData);
       console.log("Response:", response.data);
-
+  
       // Show popup after successfully adding the expense
       setShowPopup(true);
-
+  
       // Reset materials and total after successful submission
       setMaterials([]);
       setTotal(0);
       setExpenseType("");
-
+  
     } catch (error) {
       console.error("Error:", error);
     }
   };
-
+  
   return (
     <div className="h-screen w-full flex justify-start items-center bg-gray-100 ">
       <div className='h-screen'>
@@ -100,6 +102,22 @@ function AddExpense() {
                 <div>
                   <label htmlFor={`materialName${index}`} className="block text-gray-700 text-sm font-bold mb-2">Name</label>
                   <input type="text" id={`materialName${index}`} name={`materialName${index}`} value={material.materialName} className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" onChange={(e) => updateMaterial(index, 'materialName', e.target.value)} />
+                </div>
+                <div>
+                  <label htmlFor={`expenseDetails${index}`} className="block text-gray-700 text-sm font-bold mb-2">Expense Details</label>
+                  <input type="text" id={`expenseDetails${index}`} name={`expenseDetails${index}`} value={material.expenseDetails} className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" onChange={(e) => updateMaterial(index, 'expenseDetails', e.target.value)} />
+                </div>
+                <div>
+                  <label htmlFor={`date${index}`} className="block text-gray-700 text-sm font-bold mb-2">Date</label>
+                  <input 
+                    type="date" 
+                    id={`date${index}`} 
+                    name={`date${index}`} 
+                    value={material.date || ''} // No default value, allowing user input
+                    max={new Date().toISOString().split('T')[0]} // Prevent future dates
+                    className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                    onChange={(e) => updateMaterial(index, 'date', e.target.value)} 
+                  />
                 </div>
                 <div>
                   <label htmlFor={`pricePerUnit${index}`} className="block text-gray-700 text-sm font-bold mb-2">Price Per Unit</label>

@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
@@ -11,6 +12,12 @@ function SL_Yearly() {
   };
 
   useEffect(() => {
+    // Get the current year and set it as the default selected year
+    const currentYear = new Date().getFullYear();
+    setSelectedYear(currentYear.toString());
+  }, []);
+
+  useEffect(() => {
     if (selectedYear !== '') {
       fetchData();
     }
@@ -21,8 +28,7 @@ function SL_Yearly() {
       const startOfYear = `${selectedYear}-01-01`;
       const endOfYear = `${selectedYear}-12-31`;
      
-      // const response = await axios.get('http://localhost:8080/api/invoices/getDataBetweenDates', {
-        const response = await axios.get('http:// 16.170.242.6:8080/api/invoices/getDataBetweenDates', {
+      const response = await axios.get('http://localhost:8080/api/invoices/getDataBetweenDates', {
         params: {
           startDate: startOfYear,
           endDate: endOfYear
@@ -59,9 +65,9 @@ function SL_Yearly() {
           <tbody>
             {ExpanceData.map((expense) => (
               <tr key={expense.id}>
-                <td className="border px-4 py-2">{expense.id}</td>
-                <td className="border px-4 py-2">{expense.date}</td>
-                <td className="border px-4 py-2">{expense.grandtotal}</td>
+                <td className="border px-4 py-2 text-center">{expense.id}</td>
+                <td className="border px-4 py-2 text-center">{expense.date}</td>
+                <td className="border px-4 py-2 text-center">{expense.grandtotal}</td>
               </tr>
             ))}
           </tbody>

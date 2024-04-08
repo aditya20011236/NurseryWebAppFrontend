@@ -34,6 +34,9 @@ import EmpLogin from "./RegistrationLogin/Employeelogin";
 import EmpInvoice from "./empinvoice";
 import AvailableProduct from "./AvalableProduct";
 
+
+
+
 function HeaderRouter() {
   const location = useLocation();
   const hideHeader = ['/admin-login', '/register', '/emp_register', '/employee-login'].includes(location.pathname);
@@ -78,6 +81,8 @@ function App() {
           <Route path="/emp_register" element={<EmployeeRegForm />} />
           <Route path="/employee-login" element={<EmpLogin />} />
           <Route path="/empinvoice" element={<EmpInvoice />} />
+         
+      
         </Routes>
       </Router>
     </>

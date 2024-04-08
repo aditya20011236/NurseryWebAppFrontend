@@ -28,8 +28,8 @@ function EmployeeRegForm() {
    
     const handleSubmit = (e) => {
         e.preventDefault();
-        // axios.post('http://localhost:8080/api/employees/register', employee)
-        axios.post('http://16.170.242.6:8080/api/employees/register', employee)
+        axios.post('http://localhost:8080/api/employees/register', employee)
+        // axios.post('http://16.170.242.6:8080/api/employees/register', employee)
             .then(response => {
                 console.log('Employee registered successfully:', response.data);
                 setRegisterSuccess(true); // Set registerSuccess state to true to display the popup

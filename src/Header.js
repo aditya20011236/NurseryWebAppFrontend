@@ -9,10 +9,10 @@ export default function Header() {
           <img className="h-full w-full self-center" src={Logo} alt="Logo" />
         </div>
         <div>
-          <a href="/home" className="text-4xl no-underline text-gray-800 hover:text-blue-dark font-sans font-bold italic">
+          <a href="/home" className="text-4xl no-underline text-gray-800 hover:text-blue-dark font-sans font-bold ">
             <span className="text-teal-500 transform rotate-3">Shree</span> 
             <span className="text-teal-600 transform rotate-6"> Samarth</span> 
-            <span className="text-teal-700 transform rotate-9"> Nursery</span> {/* Rotated Nursery */}
+            <span className="text-teal-700 transform rotate-9"> Nursery</span>
           </a>
           <br />
         </div>

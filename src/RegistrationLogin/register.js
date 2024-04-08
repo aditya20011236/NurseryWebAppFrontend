@@ -23,8 +23,8 @@ function AdminRegForm() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // axios.post('http://localhost:8080/save', user)
-    axios.post('http://16.170.242.6:8080/save', user)
+    axios.post('http://localhost:8080/save', user)
+    // axios.post('http://16.170.242.6:8080/save', user)
       .then(response => {
         console.log('User saved successfully:', response.data);
         setSuccessMessage('User registered successfully');

@@ -86,8 +86,8 @@ function PL_week() {
  
   const fetchData = async (startDate, endDate) => {
     try {
-      // const expenseResponse = await axios.get('http://localhost:8080/api/expenses/expenses/getDataBetweenDates/date', {
-        const expenseResponse = await axios.get('http:// 16.170.242.6:8080/api/expenses/expenses/getDataBetweenDates/date', {
+      const expenseResponse = await axios.get('http://localhost:8080/api/expenses/expenses/getDataBetweenDates/date', {
+        // const expenseResponse = await axios.get('http:// 16.170.242.6:8080/api/expenses/expenses/getDataBetweenDates/date', {
         params: {
           startDate,
           endDate
@@ -101,8 +101,8 @@ function PL_week() {
     }
 
     try {
-      // const salesResponse = await axios.get('http://localhost:8080/api/invoices/getDataBetweenDates/date', {
-        const salesResponse = await axios.get('http://16.170.242.6:8080/api/invoices/getDataBetweenDates/date', {
+      const salesResponse = await axios.get('http://localhost:8080/api/invoices/getDataBetweenDates/date', {
+        // const salesResponse = await axios.get('http://16.170.242.6:8080/api/invoices/getDataBetweenDates/date', {
         params: {
           startDate,
           endDate
