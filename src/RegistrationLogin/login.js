@@ -1,46 +1,59 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import axios from 'axios';
-import Loginbg from './Loginbg.jpg'; // Import your background image
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import axios from "axios";
+import Loginbg from "./Loginbg.jpg"; // Import your background image
+import host from "../util/config";
 
 const Login = () => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
- 
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:8080/api/login', {
+      const response = await fetch(host + "/api/login", {
         // const response = await fetch('http://16.170.242.6:8080/api/login', {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ username, password }),
       });
       if (response.ok) {
-        window.location.href = '/invoice';
+        window.location.href = "/invoice";
       } else {
-        setError('Incorrect username or password.');
+        setError("Incorrect username or password.");
       }
     } catch (error) {
-      console.error('Error:', error);
-      setError('An error occurred. Please try again.');
+      console.error("Error:", error);
+      setError("An error occurred. Please try again.");
     }
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8" style={{ backgroundImage: `url(${Loginbg})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
+    <div
+      className="min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8"
+      style={{
+        backgroundImage: `url(${Loginbg})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    >
       <div className="sm:mx-auto sm:w-full sm:max-w-md text-white">
-        <h2 className="mt-6 text-center text-3xl font-extrabold">Login as Admin</h2>
+        <h2 className="mt-6 text-center text-3xl font-extrabold">
+          Login as Admin
+        </h2>
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
-              <label htmlFor="username" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="username"
+                className="block text-sm font-medium text-gray-700"
+              >
                 Username
               </label>
               <input
@@ -56,7 +69,10 @@ const Login = () => {
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-700"
+              >
                 Password
               </label>
               <input
@@ -73,12 +89,18 @@ const Login = () => {
 
             <div className="flex items-center justify-between">
               <div className="text-sm">
-                <Link to="/register" className="font-medium text-indigo-600 hover:text-indigo-500">
+                <Link
+                  to="/register"
+                  className="font-medium text-indigo-600 hover:text-indigo-500"
+                >
                   Register
                 </Link>
               </div>
               <div className="text-sm">
-                <a href="#" className="font-medium text-indigo-600 hover:text-indigo-500">
+                <a
+                  href="#"
+                  className="font-medium text-indigo-600 hover:text-indigo-500"
+                >
                   Forgot your password?
                 </a>
               </div>

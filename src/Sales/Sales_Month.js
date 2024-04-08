@@ -1,27 +1,28 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import host from "../util/config";
 
 function Sl_Month() {
-  const [selectedYear, setSelectedYear] = useState('');
-  const [selectedMonth, setSelectedMonth] = useState('');
+  const [selectedYear, setSelectedYear] = useState("");
+  const [selectedMonth, setSelectedMonth] = useState("");
   const [ExpanceData, setExpanceData] = useState([]);
   const [totalExpenses, setTotalExpenses] = useState(0);
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
 
   const months = [
-    { name: 'January', days: 31, numerical: '01' },
-    { name: 'February', days: 28, numerical: '02' },
-    { name: 'March', days: 31, numerical: '03' },
-    { name: 'April', days: 30, numerical: '04' },
-    { name: 'May', days: 31, numerical: '05' },
-    { name: 'June', days: 30, numerical: '06' },
-    { name: 'July', days: 31, numerical: '07' },
-    { name: 'August', days: 31, numerical: '08' },
-    { name: 'September', days: 30, numerical: '09' },
-    { name: 'October', days: 31, numerical: '10' },
-    { name: 'November', days: 30, numerical: '11' },
-    { name: 'December', days: 31, numerical: '12' }
+    { name: "January", days: 31, numerical: "01" },
+    { name: "February", days: 28, numerical: "02" },
+    { name: "March", days: 31, numerical: "03" },
+    { name: "April", days: 30, numerical: "04" },
+    { name: "May", days: 31, numerical: "05" },
+    { name: "June", days: 30, numerical: "06" },
+    { name: "July", days: 31, numerical: "07" },
+    { name: "August", days: 31, numerical: "08" },
+    { name: "September", days: 30, numerical: "09" },
+    { name: "October", days: 31, numerical: "10" },
+    { name: "November", days: 30, numerical: "11" },
+    { name: "December", days: 31, numerical: "12" },
   ];
   const years = Array.from({ length: 6 }, (_, i) => 2022 + i); // Generate an array of years from 2000 to 2100
 
@@ -35,18 +36,27 @@ function Sl_Month() {
 
   useEffect(() => {
     if (selectedYear && selectedMonth) {
-      const selectedMonthObj = months.find(month => month.name === selectedMonth);
+      const selectedMonthObj = months.find(
+        (month) => month.name === selectedMonth
+      );
       let daysInMonth = selectedMonthObj.days;
 
       // Adjust days in February for leap years
-      if (selectedMonth === 'February') {
-        if ((selectedYear % 4 === 0 && selectedYear % 100 !== 0) || selectedYear % 400 === 0) {
+      if (selectedMonth === "February") {
+        if (
+          (selectedYear % 4 === 0 && selectedYear % 100 !== 0) ||
+          selectedYear % 400 === 0
+        ) {
           daysInMonth = 29;
         }
       }
 
       setStartDate(`${selectedYear}-${selectedMonthObj.numerical}-01`);
-      setEndDate(`${selectedYear}-${selectedMonthObj.numerical}-${daysInMonth.toString().padStart(2, '0')}`);
+      setEndDate(
+        `${selectedYear}-${selectedMonthObj.numerical}-${daysInMonth
+          .toString()
+          .padStart(2, "0")}`
+      );
     }
   }, [selectedYear, selectedMonth]);
 
@@ -58,19 +68,25 @@ function Sl_Month() {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get('http://localhost:8080/api/invoices/getDataBetweenDates', {
-        // const response = await axios.get('http://16.170.242.6:8080/api/invoices/getDataBetweenDates', {
-        params: {
-          startDate,
-          endDate
+      const response = await axios.get(
+        host + "/api/invoices/getDataBetweenDates",
+        {
+          // const response = await axios.get('http://16.170.242.6:8080/api/invoices/getDataBetweenDates', {
+          params: {
+            startDate,
+            endDate,
+          },
         }
-      });
+      );
 
       setExpanceData(response.data);
-      const total = response.data.reduce((acc, item) => acc + Number(item.grandtotal), 0); // Assuming total expense is returned from backend
+      const total = response.data.reduce(
+        (acc, item) => acc + Number(item.grandtotal),
+        0
+      ); // Assuming total expense is returned from backend
       setTotalExpenses(total);
     } catch (error) {
-      console.error('Error fetching data:', error);
+      console.error("Error fetching data:", error);
     }
   };
 
@@ -80,20 +96,38 @@ function Sl_Month() {
         <h1 className="text-xl font-semibold mb-4">Select Year and Month</h1>
         <div className="flex flex-col sm:flex-row mb-4">
           <div className="mr-2">
-            <label htmlFor="yearSelect" className="mb-2">Select Year:</label>
-            <select id="yearSelect" value={selectedYear} onChange={handleYearChange} className="border border-gray-300 rounded-md px-3 py-2 w-full focus:outline-none">
+            <label htmlFor="yearSelect" className="mb-2">
+              Select Year:
+            </label>
+            <select
+              id="yearSelect"
+              value={selectedYear}
+              onChange={handleYearChange}
+              className="border border-gray-300 rounded-md px-3 py-2 w-full focus:outline-none"
+            >
               <option value="">Select Year</option>
               {years.map((year, index) => (
-                <option key={index} value={year}>{year}</option>
+                <option key={index} value={year}>
+                  {year}
+                </option>
               ))}
             </select>
           </div>
           <div>
-            <label htmlFor="monthSelect" className="mb-2">Select Month:</label>
-            <select id="monthSelect" value={selectedMonth} onChange={handleMonthChange} className="border border-gray-300 rounded-md px-3 py-2 w-full focus:outline-none">
+            <label htmlFor="monthSelect" className="mb-2">
+              Select Month:
+            </label>
+            <select
+              id="monthSelect"
+              value={selectedMonth}
+              onChange={handleMonthChange}
+              className="border border-gray-300 rounded-md px-3 py-2 w-full focus:outline-none"
+            >
               <option value="">Select Month</option>
               {months.map((month, index) => (
-                <option key={index} value={month.name}>{month.name}</option>
+                <option key={index} value={month.name}>
+                  {month.name}
+                </option>
               ))}
             </select>
           </div>
@@ -117,7 +151,9 @@ function Sl_Month() {
               <tr key={expense.id}>
                 <td className="border px-4 py-2 text-center">{expense.id}</td>
                 <td className="border px-4 py-2 text-center">{expense.date}</td>
-                <td className="border px-4 py-2 text-center">{expense.grandtotal}</td>
+                <td className="border px-4 py-2 text-center">
+                  {expense.grandtotal}
+                </td>
               </tr>
             ))}
           </tbody>

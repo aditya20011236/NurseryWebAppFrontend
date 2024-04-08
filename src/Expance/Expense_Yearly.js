@@ -22,7 +22,7 @@
 //           const startOfYear = `${selectedYear}-01-01`;
 //           const endOfYear = `${selectedYear}-12-31`;
 
-//           let url = 'http://localhost:8080/api/expenses/getDataBetweenDates';
+//           let url = host+'/api/expenses/getDataBetweenDates';
 //           if (selectedCategory !== '') {
 //             url = `http://localhost:8080/api/expenses/getDataBetweenDates?startDate=${startOfYear}&endDate=${endOfYear}&expenseType=${selectedCategory}`;
 //           }
@@ -57,7 +57,7 @@
 //           </select>
 //         </div>
 //         </div>
-        
+
 //       </div>
 
 //       <div className='max-w-4xl mt-8 bg-white shadow-md rounded-md justify-center items-center overflow-x-auto'>
@@ -87,14 +87,15 @@
 // }
 
 // export default Ex_Yearly;
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import host from "../util/config";
 
 function Ex_Yearly() {
   const currentYear = new Date().getFullYear(); // Get the current year
 
   const [selectedYear, setSelectedYear] = useState(currentYear.toString()); // Set default year to current year
-  const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState("");
   const [expenseData, setExpenseData] = useState([]);
   const [totalExpenses, setTotalExpenses] = useState(0);
 
@@ -108,23 +109,26 @@ function Ex_Yearly() {
 
   useEffect(() => {
     const fetchData = async () => {
-      if (selectedYear !== '') {
+      if (selectedYear !== "") {
         try {
           const startOfYear = `${selectedYear}-01-01`;
           const endOfYear = `${selectedYear}-12-31`;
 
-          let url = 'http://localhost:8080/api/expenses/getDataBetweenDates';
-          if (selectedCategory !== '') {
+          let url = host + "/api/expenses/getDataBetweenDates";
+          if (selectedCategory !== "") {
             url = `http://localhost:8080/api/expenses/getDataBetweenDates?startDate=${startOfYear}&endDate=${endOfYear}&expenseType=${selectedCategory}`;
           }
 
           const response = await axios.get(url);
 
           setExpenseData(response.data);
-          const total = response.data.reduce((acc, item) => acc + Number(item.grandTotal), 0);
+          const total = response.data.reduce(
+            (acc, item) => acc + Number(item.grandTotal),
+            0
+          );
           setTotalExpenses(total);
         } catch (error) {
-          console.error('Error fetching data:', error);
+          console.error("Error fetching data:", error);
         }
       }
     };
@@ -133,13 +137,23 @@ function Ex_Yearly() {
   }, [selectedYear, selectedCategory]);
 
   return (
-    <div className='flex flex-col h-screen'>
+    <div className="flex flex-col h-screen">
       <div className="max-w-xl mx-auto p-4 bg-white shadow-md ml-0">
         <h1 className="text-xl font-semibold mb-4">Select Year</h1>
         <div className="flex items-center mb-4">
-          <input type="number" value={selectedYear} onChange={handleYearChange} className="rounded-l-md border border-gray-300 focus:outline-none px-3 py-2 w-60" placeholder="Enter year" />
+          <input
+            type="number"
+            value={selectedYear}
+            onChange={handleYearChange}
+            className="rounded-l-md border border-gray-300 focus:outline-none px-3 py-2 w-60"
+            placeholder="Enter year"
+          />
           <div>
-            <select value={selectedCategory} onChange={handleCategoryChange} className="rounded-l-md border border-gray-300 focus:outline-none px-3 py-2">
+            <select
+              value={selectedCategory}
+              onChange={handleCategoryChange}
+              className="rounded-l-md border border-gray-300 focus:outline-none px-3 py-2"
+            >
               <option value="">Select Category</option>
               <option value="employee">Employee</option>
               <option value="Routine">Routine</option>
@@ -148,10 +162,9 @@ function Ex_Yearly() {
             </select>
           </div>
         </div>
-
       </div>
 
-      <div className='max-w-4xl mt-8 bg-white shadow-md rounded-md justify-center items-center overflow-x-auto'>
+      <div className="max-w-4xl mt-8 bg-white shadow-md rounded-md justify-center items-center overflow-x-auto">
         <h2 className="text-xl font-semibold p-4">Expense Data</h2>
         <table className="w-full table-auto">
           <thead>
@@ -166,7 +179,9 @@ function Ex_Yearly() {
               <tr key={expense.id}>
                 <td className="border px-4 py-2 text-center">{expense.id}</td>
                 <td className="border px-4 py-2 text-center">{expense.date}</td>
-                <td className="border px-4 py-2 text-center">{expense.grandTotal}</td>
+                <td className="border px-4 py-2 text-center">
+                  {expense.grandTotal}
+                </td>
               </tr>
             ))}
           </tbody>

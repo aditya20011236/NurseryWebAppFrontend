@@ -1,1 +1,6 @@
-const expensesResponse = await axios.get('http://localhost:8080/api/expenses/expenses/getDataBetweenDates/date', {
+import host from "../util/config";
+
+const expensesResponse = await axios.get(
+  host + "/api/expenses/expenses/getDataBetweenDates/date",
+  {}
+);
