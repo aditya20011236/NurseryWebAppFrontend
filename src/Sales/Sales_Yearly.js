@@ -8,11 +8,21 @@ function SL_Yearly() {
   const [totalExpenses, setTotalExpenses] = useState(0);
 
   const handleYearChange = (event) => {
-    setSelectedYear(event.target.value);
+    const selectedYear = event.target.value;
+    const currentYear = new Date().getFullYear();
+
+
+    if (parseInt(selectedYear) <= currentYear) {
+      setSelectedYear(selectedYear);
+    } else {
+
+      alert("Future Year is not allowed");
+
+    }
   };
 
   useEffect(() => {
-    // Get the current year and set it as the default selected year
+
     const currentYear = new Date().getFullYear();
     setSelectedYear(currentYear.toString());
   }, []);
@@ -86,7 +96,7 @@ function SL_Yearly() {
             ))}
           </tbody>
         </table>
-        <p className="p-4">Total Sales: {totalExpenses}</p>
+        <p className="p-4">Total Sales: {totalExpenses.toFixed(2)}</p>
       </div>
     </div>
   );

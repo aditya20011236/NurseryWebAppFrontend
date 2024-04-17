@@ -3,7 +3,7 @@ import axios from "axios";
 import host from "../util/config";
 
 function PL_Daily() {
-  const [selectedDate, setSelectedDate] = useState("");
+  const [selectedDate, setSelectedDate] = useState(getTodayDate()); // Set default date to today
   const [ExpenseData, setExpenseData] = useState([]);
   const [SalesData, setSalesData] = useState([]);
   const [totalExpenses, setTotalExpenses] = useState(0);
@@ -27,7 +27,6 @@ function PL_Daily() {
       const response = await axios.get(
         host + "/api/expenses/expenses/getDataBetweenDates/date",
         {
-          // const response = await axios.get('http:// 16.170.242.6:8080/api/expenses/expenses/getDataBetweenDates/date', {
           params: {
             startDate,
             endDate,
@@ -52,7 +51,6 @@ function PL_Daily() {
       const response = await axios.get(
         host + "/api/invoices/getDataBetweenDates/date",
         {
-          // const response = await axios.get('http://16.170.242.6:8080/api/invoices/getDataBetweenDates/date', {
           params: {
             startDate,
             endDate,
@@ -66,16 +64,24 @@ function PL_Daily() {
         0
       );
       setTotalSales(totalSales);
-      // alert(totalSales);
     } catch (error) {
       console.error("Error fetching sales data:", error);
     }
   };
 
+  // Function to get today's date in the format YYYY-MM-DD
+  function getTodayDate() {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, "0");
+    const day = String(today.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  }
+
   return (
     <div className="flex flex-col h-screen">
       <div className="max-w-xl mx-auto p-4 bg-white shadow-md ml-0">
-        <h1 className="text-xl font-semibold mb-4">Profit&Loss Report</h1>
+        <h1 className="text-xl font-semibold mb-4">Select Date</h1>
         <div className="flex items-center mb-4">
           <input
             type="date"
@@ -98,8 +104,8 @@ function PL_Daily() {
           </thead>
           <tbody>
             <tr>
-              <td className="border px-4 py-2">{totalSales}</td>
-              <td className="border px-4 py-2">{totalExpenses}</td>
+              <td className="border px-4 py-2">{totalSales.toFixed(2)}</td>
+              <td className="border px-4 py-2">{totalExpenses.toFixed(2)}</td>
               <td className="border px-4 py-2">{totalSales - totalExpenses}</td>
             </tr>
           </tbody>

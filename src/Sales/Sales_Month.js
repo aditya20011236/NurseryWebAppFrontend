@@ -1,10 +1,15 @@
+
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import host from "../util/config";
 
 function Sl_Month() {
-  const [selectedYear, setSelectedYear] = useState("");
-  const [selectedMonth, setSelectedMonth] = useState("");
+  const today = new Date();
+  const currentYear = today.getFullYear();
+  const currentMonth = today.toLocaleString('default', { month: 'long' });
+
+  const [selectedYear, setSelectedYear] = useState(currentYear);
+  const [selectedMonth, setSelectedMonth] = useState(currentMonth);
   const [ExpanceData, setExpanceData] = useState([]);
   const [totalExpenses, setTotalExpenses] = useState(0);
   const [startDate, setStartDate] = useState("");
@@ -24,7 +29,7 @@ function Sl_Month() {
     { name: "November", days: 30, numerical: "11" },
     { name: "December", days: 31, numerical: "12" },
   ];
-  const years = Array.from({ length: 6 }, (_, i) => 2022 + i); // Generate an array of years from 2000 to 2100
+  const years = Array.from({ length: 6 }, (_, i) => 2022 + i); // Generate an array of years from 2022 to 2027
 
   const handleYearChange = (event) => {
     setSelectedYear(event.target.value);
@@ -71,7 +76,6 @@ function Sl_Month() {
       const response = await axios.get(
         host + "/api/invoices/getDataBetweenDates",
         {
-          // const response = await axios.get('http://16.170.242.6:8080/api/invoices/getDataBetweenDates', {
           params: {
             startDate,
             endDate,
@@ -158,7 +162,7 @@ function Sl_Month() {
             ))}
           </tbody>
         </table>
-        <p className="p-4">Total Sales: {totalExpenses}</p>
+        <p className="p-4">Total Sales: {totalExpenses.toFixed(2)}</p>
       </div>
     </div>
   );

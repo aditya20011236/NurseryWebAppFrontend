@@ -14,6 +14,8 @@ function PL_Nav() {
           <NavLink href="/PLQ">Quarterly</NavLink>
           <NavLink href="/PLY">Yearly</NavLink>
           
+          
+          
         </div>
       </div>
     </nav>

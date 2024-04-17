@@ -10,6 +10,17 @@ function PL_week() {
   const [totalSales, setTotalSales] = useState(0);
   const [profitLoss, setProfitLoss] = useState(0);
 
+  const currentDate = new Date();
+  const currentYear = currentDate.getFullYear();
+  const currentMonth = currentDate.toLocaleString("default", { month: "long" });
+  const currentWeek = `Week ${Math.ceil(currentDate.getDate() / 7)}`;
+
+  useEffect(() => {
+    setSelectedYear(currentYear.toString());
+    setSelectedMonth(currentMonth);
+    setSelectedWeek(currentWeek);
+  }, []);
+
   const months = [
     { name: "January", days: 31, numerical: "01" },
     { name: "February", days: 28, numerical: "02" },
@@ -229,9 +240,9 @@ function PL_week() {
             </thead>
             <tbody>
               <tr>
-                <td className="border px-4 py-2">{totalSales}</td>
-                <td className="border px-4 py-2">{totalExpenses}</td>
-                <td className="border px-4 py-2">{profitLoss}</td>
+                <td className="border px-4 py-2">{totalSales.toFixed(2)}</td>
+                <td className="border px-4 py-2">{totalExpenses.toFixed(2)}</td>
+                <td className="border px-4 py-2">{profitLoss.toFixed(2)}</td>
               </tr>
             </tbody>
           </table>

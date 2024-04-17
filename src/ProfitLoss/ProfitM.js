@@ -3,8 +3,12 @@ import axios from "axios";
 import host from "../util/config";
 
 function PL_month() {
-  const [selectedYear, setSelectedYear] = useState("");
-  const [selectedMonth, setSelectedMonth] = useState("");
+  const currentDate = new Date();
+  const currentYear = currentDate.getFullYear();
+  const currentMonth = currentDate.toLocaleString('default', { month: 'long' });
+
+  const [selectedYear, setSelectedYear] = useState(currentYear.toString());
+  const [selectedMonth, setSelectedMonth] = useState(currentMonth);
   const [totalExpenses, setTotalExpenses] = useState(0);
   const [totalSales, setTotalSales] = useState(0);
   const [profitLoss, setProfitLoss] = useState(0);
@@ -152,9 +156,9 @@ function PL_month() {
             </thead>
             <tbody>
               <tr>
-                <td className="border px-4 py-2">{totalSales}</td>
-                <td className="border px-4 py-2">{totalExpenses}</td>
-                <td className="border px-4 py-2">{profitLoss}</td>
+                <td className="border px-4 py-2">{totalSales.toFixed(2)}</td>
+                <td className="border px-4 py-2">{totalExpenses.toFixed(2)}</td>
+                <td className="border px-4 py-2">{profitLoss.toFixed(2)}</td>
               </tr>
             </tbody>
           </table>

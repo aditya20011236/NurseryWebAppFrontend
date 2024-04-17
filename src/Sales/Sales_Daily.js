@@ -1,9 +1,11 @@
+
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import host from "../util/config";
 
 function Sl_Daily() {
-  const [selectedDate, setSelectedDate] = useState("");
+  const today = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
+  const [selectedDate, setSelectedDate] = useState(today);
   const [ExpanceData, setExpanceData] = useState([]);
   const [totalExpenses, setTotalExpenses] = useState(0);
 
@@ -25,7 +27,6 @@ function Sl_Daily() {
       const response = await axios.get(
         host + "/api/invoices/getDataBetweenDates",
         {
-          // const response = await axios.get('http://16.170.242.6:8080/api/invoices/getDataBetweenDates', {
           params: {
             startDate,
             endDate,
@@ -47,7 +48,7 @@ function Sl_Daily() {
   return (
     <div className="flex flex-col  h-screen">
       <div className="max-w-xl mx-auto p-4 bg-white shadow-md ml-0">
-        <h1 className="text-xl font-semibold mb-4">Sales Report</h1>
+        <h1 className="text-xl font-semibold mb-4">Select Date</h1>
         <div className="flex items-center mb-4">
           <input
             type="date"
@@ -80,7 +81,7 @@ function Sl_Daily() {
             ))}
           </tbody>
         </table>
-        <p className="p-4">Total Sales: {totalExpenses}</p>
+        <p className="p-4">Total Sales: {totalExpenses.toFixed(2)}</p>
       </div>
     </div>
   );

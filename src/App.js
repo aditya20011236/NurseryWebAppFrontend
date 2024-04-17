@@ -33,6 +33,10 @@ import EmployeeRegForm from "./RegistrationLogin/EmployeeRegister";
 import EmpLogin from "./RegistrationLogin/Employeelogin";
 import EmpInvoice from "./empinvoice";
 import AvailableProduct from "./AvalableProduct";
+import InvoiceReport from './InvoiceReport';
+
+
+
 
 
 
@@ -70,6 +74,7 @@ function App() {
           <Route path="/PLW" element={<PLW />} />
           <Route path="/PLM" element={<PLM />} />
           <Route path="/PLQ" element={<PLQ />} />
+        
           <Route path="/PLY" element={<PLY />} />
           <Route path="/advancebook" element={<AdvanceBooking />} />
           <Route path="/showbooking" element={<ShowBooking />} />
@@ -81,6 +86,7 @@ function App() {
           <Route path="/emp_register" element={<EmployeeRegForm />} />
           <Route path="/employee-login" element={<EmpLogin />} />
           <Route path="/empinvoice" element={<EmpInvoice />} />
+          <Route path="/in" element={<InvoiceReport/>} />
          
       
         </Routes>

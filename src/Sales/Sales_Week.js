@@ -3,9 +3,14 @@ import axios from "axios";
 import host from "../util/config";
 
 function Sl_week() {
-  const [selectedYear, setSelectedYear] = useState("");
-  const [selectedMonth, setSelectedMonth] = useState("");
-  const [selectedWeek, setSelectedWeek] = useState("");
+  const today = new Date();
+  const currentYear = today.getFullYear();
+  const currentMonth = today.toLocaleString('default', { month: 'long' });
+  const currentWeek = `Week ${Math.ceil(today.getDate() / 7)}`;
+
+  const [selectedYear, setSelectedYear] = useState(currentYear);
+  const [selectedMonth, setSelectedMonth] = useState(currentMonth);
+  const [selectedWeek, setSelectedWeek] = useState(currentWeek);
   const [ExpanceData, setExpanceData] = useState([]);
   const [totalExpenses, setTotalExpenses] = useState(0);
   const [startDate, setStartDate] = useState("");
@@ -225,7 +230,7 @@ function Sl_week() {
               ))}
             </tbody>
           </table>
-          <p className="p-4">Total Sales: {totalExpenses}</p>
+          <p className="p-4">Total Sales: {totalExpenses.toFixed(2)}</p>
         </div>
       )}
     </div>

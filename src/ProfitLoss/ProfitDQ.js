@@ -3,8 +3,13 @@ import axios from "axios";
 import host from "../util/config";
 
 function PL_Q() {
-  const [selectedYear, setSelectedYear] = useState("");
-  const [selectedQuarter, setSelectedQuarter] = useState("");
+  const currentDate = new Date();
+  const currentYear = currentDate.getFullYear();
+  const currentMonth = currentDate.getMonth() + 1;
+  const currentQuarter = Math.ceil(currentMonth / 3);
+
+  const [selectedYear, setSelectedYear] = useState(currentYear.toString());
+  const [selectedQuarter, setSelectedQuarter] = useState(currentQuarter.toString());
   const [expenseData, setExpenseData] = useState([]);
   const [totalExpenses, setTotalExpenses] = useState(0);
   const [totalSales, setTotalSales] = useState(0);
@@ -16,6 +21,7 @@ function PL_Q() {
   };
 
   const handleQuarterChange = (event) => {
+    event.preventDefault();
     setSelectedQuarter(event.target.value);
   };
 
@@ -83,6 +89,7 @@ function PL_Q() {
 
   return (
     <div className="flex flex-col h-screen">
+      <h1>Quaterly</h1>
       <div className="max-w-xl mx-auto p-4 bg-white shadow-md ml-0">
         <h1 className="text-xl font-semibold mb-4">Select Year and Quarter</h1>
         <div className="flex flex-col sm:flex-row mb-4 space-y-4 sm:space-y-0 sm:space-x-4">
@@ -133,9 +140,9 @@ function PL_Q() {
             </thead>
             <tbody className="overflow-y-auto">
               <tr>
-                <td className="px-4 py-2">{totalSales}</td>
-                <td className="px-4 py-2">{totalExpenses}</td>
-                <td className="px-4 py-2">{profitLoss}</td>
+                <td className="px-4 py-2">{totalSales.toFixed(2)}</td>
+                <td className="px-4 py-2">{totalExpenses.toFixed(2)}</td>
+                <td className="px-4 py-2">{profitLoss.toFixed(2)}</td>
               </tr>
             </tbody>
           </table>

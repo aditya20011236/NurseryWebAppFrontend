@@ -3,8 +3,12 @@ import axios from "axios";
 import host from "../util/config";
 
 function Sl_Q() {
-  const [selectedYear, setSelectedYear] = useState("");
-  const [selectedQuarter, setSelectedQuarter] = useState("");
+  const today = new Date();
+  const currentYear = today.getFullYear();
+  const currentQuarter = Math.ceil((today.getMonth() + 1) / 3);
+
+  const [selectedYear, setSelectedYear] = useState(currentYear);
+  const [selectedQuarter, setSelectedQuarter] = useState(currentQuarter);
   const [ExpanceData, setExpanceData] = useState([]);
   const [totalExpenses, setTotalExpenses] = useState(0);
   const [startDate, setStartDate] = useState("");
@@ -22,10 +26,9 @@ function Sl_Q() {
 
   useEffect(() => {
     if (selectedYear && selectedQuarter) {
-      const quarterStartMonth = (parseInt(selectedQuarter) - 1) * 3 + 1;
-      const quarterEndMonth =
-        quarterStartMonth === 10 ? 12 : quarterStartMonth + 2;
-      const startDay = quarterStartMonth === 10 ? "01" : "01";
+      const quarterStartMonth = (selectedQuarter - 1) * 3 + 1;
+      const quarterEndMonth = quarterStartMonth + 2;
+      const startDay = "01";
       const endDay = quarterEndMonth === 12 ? "31" : "30";
       setStartDate(
         `${selectedYear}-${quarterStartMonth
@@ -51,7 +54,6 @@ function Sl_Q() {
       const response = await axios.get(
         host + "/api/invoices/getDataBetweenDates",
         {
-          // const response = await axios.get('http:// 16.170.242.6:8080/api/invoices/getDataBetweenDates', {
           params: {
             startDate,
             endDate,
@@ -63,7 +65,7 @@ function Sl_Q() {
       const total = response.data.reduce(
         (acc, item) => acc + Number(item.grandtotal),
         0
-      ); // Assuming total expense is returned from backend
+      ); 
       setTotalExpenses(total);
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -72,7 +74,7 @@ function Sl_Q() {
 
   return (
     <div className="flex-cols justify-center items-center min-h-screen bg-gray-100">
-      <div className="max-w-md p-4 bg-white shadow-md rounded-md">
+      <div className="max-w-md p-4 bg-white shadow-md rounded-md sticky top-0">
         <h1 className="text-xl font-semibold mb-4">Select Year and Quarter</h1>
         <div className="flex flex-col sm:flex-row mb-4 space-y-4 sm:space-y-0 sm:space-x-4">
           <select
@@ -86,8 +88,8 @@ function Sl_Q() {
               style={{ maxHeight: "200px", overflowY: "auto" }}
             >
               {Array.from({ length: 6 }, (_, i) => (
-                <option key={2022 + i} value={2022 + i}>
-                  {2022 + i}
+                <option key={currentYear + i} value={currentYear + i}>
+                  {currentYear + i}
                 </option>
               ))}
             </optgroup>
@@ -115,7 +117,7 @@ function Sl_Q() {
 
       <div className="max-w-4xl mt-8 bg-white shadow-md rounded-md overflow-x-auto ">
         <h2 className="text-xl font-semibold p-4">Sales Data</h2>
-        <div className="table-container ">
+        <div className="table-container overflow-y-auto" style={{ maxHeight: "400px" }}>
           <table className="w-full table-auto ">
             <thead className="sticky top-0 bg-white ">
               <tr>
@@ -124,7 +126,7 @@ function Sl_Q() {
                 <th className="px-4 py-2">Sales</th>
               </tr>
             </thead>
-            <tbody className="vh-[20%] overflow-y-auto">
+            <tbody>
               {ExpanceData.map((expense) => (
                 <tr key={expense.id}>
                   <td className="border px-4 py-2 text-center">{expense.id}</td>
@@ -139,7 +141,7 @@ function Sl_Q() {
             </tbody>
           </table>
         </div>
-        <p className="p-4">Total Sales: {totalExpenses}</p>
+        <p className="p-4">Total Sales: {totalExpenses.toFixed(2)}</p>
       </div>
     </div>
   );

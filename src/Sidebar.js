@@ -29,7 +29,7 @@ function Menu() {
               <Sidebar.Item as={Link} to="/SW">SALES</Sidebar.Item>
               <Sidebar.Item as={Link} to="/ExW">EXPENSE</Sidebar.Item>
               <Sidebar.Item as={Link} to="/PLD">P & L</Sidebar.Item>
-
+              <Sidebar.Item as={Link} to="/in">Invoice Generated</Sidebar.Item>
             </Sidebar.Collapse>
 
 
