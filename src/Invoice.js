@@ -20,7 +20,7 @@ function Invoice() {
       {
         srNo: 1,
         productName: "",
-
+        deliveryDate: "",
         price: "",
         quantity: "",
         total: "",
@@ -30,7 +30,9 @@ function Invoice() {
     remainingAmount: "",
     paymentMode: "",
     discount: "",
+    invoiceType: "",
   };
+  const [invoiceType, setInvoiceType] = useState("");
   const [invoiceNo, setInvoiceNo] = useState(0);
   const [productsList, setProductsList] = useState([]);
   const [formData, setFormData] = useState(initialFormData);
@@ -65,13 +67,7 @@ function Invoice() {
       setSelectedProductIds([...selectedProductIds, productId]);
     }
   };
-  // const deleteSelectedProducts = () => {
-  //   const updatedProducts = formData.products.filter(
-  //     (product) => !selectedProductIds.includes(product.srNo)
-  //   );
-  //   setFormData({ ...formData, products: updatedProducts });
-  //   setSelectedProductIds([]);
-  // };
+ 
   const deleteSelectedProducts = () => {
     const updatedProducts = formData.products.filter(
       (product) => !selectedProductIds.includes(product.srNo)
@@ -87,22 +83,29 @@ function Invoice() {
     setSelectedProductIds([]);
   };
 
+  
+
   const fetchLatestInvoiceNo = async () => {
     try {
-      const response = await axios.get(host + "/api/invoices/latest");
-      const latestInvoiceNo = response.data.latestInvoiceNo;
-      if (latestInvoiceNo) {
-        setInvoiceNo(parseInt(latestInvoiceNo, 10) + 1);
-      } else {
-        setInvoiceNo(1);
+      const response = await axios.get(host + "/latest");
+      let latestInvoiceNo = response.data.latestInvoiceNo;
+  
+     
+      if (!latestInvoiceNo || isNaN(parseInt(latestInvoiceNo))) {
+        latestInvoiceNo = 0;
       }
+  
+      
+      if (formData.invoiceType === "AdvanceBooking") {
+        latestInvoiceNo++;
+      }
+  
+      setInvoiceNo(latestInvoiceNo);
     } catch (error) {
       console.error("Error fetching latest invoice number:", error);
     }
   };
-
-
-
+  
 
   const fetchProducts = async () => {
     try {
@@ -114,65 +117,115 @@ function Invoice() {
   };
 
 
+  // const handleProductSelect = (index, productId) => {
+  //   const products = [...formData.products];
+  //   const selectedProduct = productsList.find(
+  //     (product) => product.id === parseInt(productId)
+  //   );
+  //   if (selectedProduct) {
+  //     products[index]["productName"] = selectedProduct.productName;
+  //     products[index]["price"] = selectedProduct.sellingPrice;
+  //     products[index]["quantity"] = "";
+  //     products[index]["total"] = "";
+  //     setFormData((prevState) => ({ ...prevState, products }));
+
+  //     const availableQuantity = selectedProduct.availableQuantity;
+  //     if (!isNaN(availableQuantity)) {
+  //       products[index]["quantity"] = availableQuantity.toString();
+  //       setFormData((prevState) => ({ ...prevState, products }));
+
+  //     }
+  //   }
+  // };
+
   const handleProductSelect = (index, productId) => {
     const products = [...formData.products];
     const selectedProduct = productsList.find(
       (product) => product.id === parseInt(productId)
     );
+  
     if (selectedProduct) {
       products[index]["productName"] = selectedProduct.productName;
       products[index]["price"] = selectedProduct.sellingPrice;
       products[index]["quantity"] = "";
       products[index]["total"] = "";
       setFormData((prevState) => ({ ...prevState, products }));
-
+  
       const availableQuantity = selectedProduct.availableQuantity;
       if (!isNaN(availableQuantity)) {
         products[index]["quantity"] = availableQuantity.toString();
         setFormData((prevState) => ({ ...prevState, products }));
-
+  
+        // Deduct the quantity from availableQuantity when invoiceType is "AdvanceBooking"
+        if (formData.invoiceType === "AdvanceBooking") {
+          const updatedProductList = productsList.map(product => {
+            if (product.id === parseInt(productId)) {
+              return {
+                ...product,
+                availableQuantity: availableQuantity - parseInt(products[index]["quantity"])
+              };
+            }
+            return product;
+          });
+          setProductsList(updatedProductList);
+        }
       }
     }
   };
+  
 
 
+ 
 
-
+  
   const handleInputChange = (index, event) => {
     const { name, value } = event.target;
     const products = [...formData.products];
     let total = 0;
-
+  
     if (name === "quantity") {
       const selectedProductId = products[index].productName;
       const selectedProduct = productsList.find(product => product.productName === selectedProductId);
-
+  
       if (!selectedProduct) {
         console.error(`Product "${selectedProductId}" not found in productsList`);
         return;
       }
-
+  
       const availableQuantity = selectedProduct.availableQuantity;
       const enteredQuantity = parseInt(value);
-
-      if (!isNaN(availableQuantity) && enteredQuantity > availableQuantity) {
-        alert(`Quantity cannot exceed available stock quantity of ${availableQuantity}!`);
-        return;
-      }
-
+      
+      // if (!isNaN(availableQuantity) && enteredQuantity > availableQuantity) {
+      //   alert(`Quantity cannot exceed available stock quantity of ${availableQuantity}!`);
+      //   return;
+      // }
+  
       products[index][name] = value;
       const price = parseFloat(products[index]["price"]);
-
+      
       if (!isNaN(price)) {
         total = (enteredQuantity * price).toFixed(2);
       }
+  
+      // Deduct the quantity from availableQuantity
+      const updatedProductList = productsList.map(product => {
+        if (product.id === parseInt(selectedProduct.id)) {
+          const remainingQuantity = availableQuantity - enteredQuantity;
+          return {
+            ...product,
+            availableQuantity: remainingQuantity >= 0 ? remainingQuantity : 0
+          };
+        }
+        return product;
+      });
+      setProductsList(updatedProductList);
     } else {
       products[index][name] = value;
     }
-
+  
     products[index]["total"] = total;
     setFormData((prevState) => ({ ...prevState, products }));
-
+  
     const grandTotal = calculateTotal();
     const remainingAmount = grandTotal - parseFloat(formData.amountPaid);
     setFormData((prevState) => ({
@@ -180,10 +233,7 @@ function Invoice() {
       remainingAmount: remainingAmount.toFixed(2),
     }));
   };
-
-
-
-
+  
   const handleAddRow = () => {
     const products = [
       ...formData.products,
@@ -290,23 +340,46 @@ function Invoice() {
 
 
 
+
+  
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!submitted) {
       try {
         const invoiceData = { ...formData, invoiceNo };
-
-        await axios.post(host + "/api/invoices", {
-          ...invoiceData,
-          mobileNumber: formData.mobileNumber,
-        });
-
-        generatePDF(calculateTotal(), invoiceNo, formData.customerName);
-
-        alert("Invoice submitted successfully!");
-
+  
+        if (formData.invoiceType === "RegularInvoice") {
+        
+          invoiceData.deliveryDate = formData.date;
+  
+     
+          const grandTotal = calculateTotal();
+  
+        
+          await axios.post(host + "/api/invoices", {
+            ...invoiceData,
+            mobileNumber: formData.mobileNumber,
+            grandTotal: grandTotal 
+          });
+  
+          generatePDF(grandTotal, invoiceNo, formData.customerName);
+  
+          alert("Regular Invoice submitted successfully!");
+        } else if (formData.invoiceType === "AdvanceBooking") {
+          
+          const grandTotal = calculateTotal();
+  
+          await axios.post(host + "/saveadvanceBooking", {
+            ...invoiceData,  
+            mobileNumber: formData.mobileNumber,
+            grandTotal: grandTotal 
+          });
+  
+          alert("Advance Booking submitted successfully!");
+        }
+  
         setInvoiceNo((prevInvoiceNo) => prevInvoiceNo + 1);
-
         setSubmitted(true);
       } catch (error) {
         console.error("Error submitting invoice:", error);
@@ -316,7 +389,6 @@ function Invoice() {
       setShowConfirmation(true);
     }
   };
-
 
   const handleConfirmYes = async () => {
     setShowConfirmation(false);
@@ -386,11 +458,11 @@ function Invoice() {
     pdf.text("Phone: 9730465591", topRightX, topRightY + 15);
 
     pdf.setTextColor("#000");
-   
+
     pdf.text(`Invoice to:`, 15, 60);
     pdf.setFont("normal");
-    const customerNameX = 15; 
-    const customerAddressX = 15; 
+    const customerNameX = 15;
+    const customerAddressX = 15;
     pdf.text(`Customer Name: ${formData.customerName}`, customerNameX, 70);
     pdf.text(
       `Customer Address: ${formData.customerAddress}`,
@@ -682,6 +754,34 @@ function Invoice() {
                 className="appearance-none border rounded w-48 py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               />
             </div>
+           
+
+            <div>
+              <label
+                htmlFor="deliveryDate"
+                className="block text-gray-700 text-sm font-bold mb-2 dark:text-white"
+              >
+                Delivery Date
+              </label>
+              <input
+                type="date"
+                id="deliveryDate"
+                name="deliveryDate"
+                value={
+                  formData.invoiceType === "RegularInvoice"
+                    ? formData.date // If RegularInvoice is selected, use date value
+                    : formData.deliveryDate // Otherwise, use deliveryDate value
+                }
+                onChange={(e) =>
+                  setFormData({ ...formData, deliveryDate: e.target.value })
+                }
+                min={formData.date}
+                disabled={formData.invoiceType === "RegularInvoice"} // Disable for RegularInvoice
+                className={`appearance-none border rounded w-48 py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${formData.invoiceType === "RegularInvoice" ? "bg-gray-300" : ""
+                  }`}
+              />
+            </div>
+
             <div className="block text-gray-700 text-sm font mb-2 dark:text-white">
               <label
                 htmlFor="mobileNumber"
@@ -870,7 +970,24 @@ function Invoice() {
                       <option value="Online">Online</option>
                     </select>
                   </td>
+                  <td className="text-center pl-4">
+                    <label htmlFor="invoiceType" className="block text-gray-700 text-sm font-bold mb-2 dark:text-white">
+                      Invoice Type
+                    </label>
+                    <select
+                      className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                      id="invoiceType"
+                      name="invoiceType"
+                      value={formData.invoiceType}
+                      onChange={(e) => setFormData({ ...formData, invoiceType: e.target.value })}
+                      required
+                    >
+                      <option value="">Select Invoice Type</option>
+                      <option value="RegularInvoice">Regular Invoice</option>
+                      <option value="AdvanceBooking">Advance Booking</option>
+                    </select>
 
+                  </td>
                 </tr>
               </tfoot>
             </table>

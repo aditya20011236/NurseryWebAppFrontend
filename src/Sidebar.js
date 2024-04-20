@@ -45,7 +45,7 @@ function Menu() {
 
             <Sidebar.Collapse icon={HiCurrencyRupee} label="Advance Booking" className="font-bold">
 
-              <Link><Sidebar.Item as={Link} to="/advancebook">ADD Booking  </Sidebar.Item></Link>
+            
               <Link><Sidebar.Item as={Link} to="/showbooking">Show Booking  </Sidebar.Item></Link>
 
 
