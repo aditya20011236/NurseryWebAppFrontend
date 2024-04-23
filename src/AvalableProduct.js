@@ -30,7 +30,7 @@ function AvailableProduct() {
 
   const deleteProduct = async (id) => {
     try {
-      await axios.delete(`http://localhost:8080/products/${id}`);
+      await axios.delete(host+"/products/"+id);
       loadProducts();
       alert("Successfully deleted");
     } catch (error) {

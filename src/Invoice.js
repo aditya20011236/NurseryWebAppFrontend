@@ -33,13 +33,16 @@ function Invoice() {
     invoiceType: "",
   };
   const [invoiceType, setInvoiceType] = useState("");
-  const [invoiceNo, setInvoiceNo] = useState(0);
+  //const [invoiceNo, setInvoiceNo] = useState(0);
   const [productsList, setProductsList] = useState([]);
   const [formData, setFormData] = useState(initialFormData);
   const [selectedProductIds, setSelectedProductIds] = useState([]);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [availableQuantity, setAvailableQuantity] = useState(0);
+  const [invoiceNo, setlatestInvoiceNoA] = useState([]);
+
+  console.log(invoiceNo);
   useEffect(() => {
     fetchLatestInvoiceNo();
     fetchProducts();
@@ -83,24 +86,27 @@ function Invoice() {
     setSelectedProductIds([]);
   };
 
-  
+
 
   const fetchLatestInvoiceNo = async () => {
     try {
-      const response = await axios.get(host + "/latest");
-      let latestInvoiceNo = response.data.latestInvoiceNo;
-  
-     
-      if (!latestInvoiceNo || isNaN(parseInt(latestInvoiceNo))) {
-        latestInvoiceNo = 0;
-      }
-  
+      const response = await axios.get(host + "/api/invoices/latest");
+    
+     const InvoiceNum =  response.data;
+     const latestInvoiceNo =parseInt(InvoiceNum);
+     setlatestInvoiceNoA(latestInvoiceNo+ 1);
+   
+      // if (formData.invoiceType === "AdvanceBooking") {
+      //   latestInvoiceNo= latestInvoiceNo+ 1;
+      //   setlatestInvoiceNoA(latestInvoiceNo);
+      // }
+      // if (formData.invoiceType === "RegularInvoice") {
+      //   latestInvoiceNo= latestInvoiceNo + 1;
+      //   setlatestInvoiceNoA(latestInvoiceNo);
+        
+      // }
+        
       
-      if (formData.invoiceType === "AdvanceBooking") {
-        latestInvoiceNo++;
-      }
-  
-      setInvoiceNo(latestInvoiceNo);
     } catch (error) {
       console.error("Error fetching latest invoice number:", error);
     }
@@ -117,26 +123,6 @@ function Invoice() {
   };
 
 
-  // const handleProductSelect = (index, productId) => {
-  //   const products = [...formData.products];
-  //   const selectedProduct = productsList.find(
-  //     (product) => product.id === parseInt(productId)
-  //   );
-  //   if (selectedProduct) {
-  //     products[index]["productName"] = selectedProduct.productName;
-  //     products[index]["price"] = selectedProduct.sellingPrice;
-  //     products[index]["quantity"] = "";
-  //     products[index]["total"] = "";
-  //     setFormData((prevState) => ({ ...prevState, products }));
-
-  //     const availableQuantity = selectedProduct.availableQuantity;
-  //     if (!isNaN(availableQuantity)) {
-  //       products[index]["quantity"] = availableQuantity.toString();
-  //       setFormData((prevState) => ({ ...prevState, products }));
-
-  //     }
-  //   }
-  // };
 
   const handleProductSelect = (index, productId) => {
     const products = [...formData.products];
@@ -156,7 +142,6 @@ function Invoice() {
         products[index]["quantity"] = availableQuantity.toString();
         setFormData((prevState) => ({ ...prevState, products }));
   
-        // Deduct the quantity from availableQuantity when invoiceType is "AdvanceBooking"
         if (formData.invoiceType === "AdvanceBooking") {
           const updatedProductList = productsList.map(product => {
             if (product.id === parseInt(productId)) {
@@ -195,10 +180,7 @@ function Invoice() {
       const availableQuantity = selectedProduct.availableQuantity;
       const enteredQuantity = parseInt(value);
       
-      // if (!isNaN(availableQuantity) && enteredQuantity > availableQuantity) {
-      //   alert(`Quantity cannot exceed available stock quantity of ${availableQuantity}!`);
-      //   return;
-      // }
+  
   
       products[index][name] = value;
       const price = parseFloat(products[index]["price"]);
@@ -375,15 +357,15 @@ function Invoice() {
             mobileNumber: formData.mobileNumber,
             grandTotal: grandTotal 
           });
-  
+          generatePDF(grandTotal, invoiceNo, formData.customerName);
           alert("Advance Booking submitted successfully!");
         }
   
-        setInvoiceNo((prevInvoiceNo) => prevInvoiceNo + 1);
+        // setInvoiceNo((prevInvoiceNo) => prevInvoiceNo + 1);
         setSubmitted(true);
       } catch (error) {
         console.error("Error submitting invoice:", error);
-        alert("Rephrase please Enter the Details of Added Product");
+        alert("Please Enter the Details of Added Product");
       }
     } else {
       setShowConfirmation(true);
@@ -401,7 +383,7 @@ function Invoice() {
       alert("Invoice submitted successfully!");
     } catch (error) {
       console.error("Error submitting invoice:", error);
-      alert("Rephrase please Enter the Details of Added Product");
+      alert("Please Enter the Details of Added Product");
     }
   };
   const handlePaymentInputChange = (e) => {
@@ -651,7 +633,7 @@ function Invoice() {
     pdf.save(`${invoiceNo}-${customerName}.pdf`);
 
 
-    setInvoiceNo((prevInvoiceNo) => prevInvoiceNo + 1);
+    // setInvoiceNo((prevInvoiceNo) => prevInvoiceNo + 1);
   };
   const handleChange = (e) => {
     const input = e.target.value.replace(/\D/g, '');
