@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 import Menu from './Sidebar';
-
+import host from "./util/config";
 function EditProduct() {
     const { id } = useParams();
     let navigate = useNavigate();
@@ -29,8 +29,8 @@ function EditProduct() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await axios.put(`http://localhost:8080/products/${id}`, product);
-            // await axios.put(`http://16.170.242.6:8080/products/${id}`, product);
+            await axios.put(host+`/products/${id}`, product);
+           
             alert('Product updated successfully');
             // Reset form fields
             setProduct({
@@ -48,8 +48,8 @@ function EditProduct() {
    
     const loadProduct = async () => {
         try {
-            const response = await axios.get(`http://localhost:8080/products/${id}`);
-            // const response = await axios.get(`http://16.170.242.6:8080/products/${id}`);
+            const response = await axios.get(host+`/products/${id}`);
+        
             setProduct(response.data);
         } catch (error) {
             console.error('Error fetching product:', error);

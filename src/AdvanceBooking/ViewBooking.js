@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Menu from '../Sidebar';
+import host from "../util/config"
 
 const ShowBooking = () => {
   const [bookings, setBookings] = useState([]);
@@ -13,7 +14,7 @@ const ShowBooking = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://localhost:8080/viewalladvancebooking');
+        const response = await axios.get(host+'/viewalladvancebooking');
         setBookings(response.data);
         setLoading(false);
       } catch (error) {
@@ -33,7 +34,7 @@ const ShowBooking = () => {
   const handleDelivery = async (bookingId) => {
     try {
       console.log('Deleting booking with ID:', bookingId); // Log bookingId
-      await axios.delete(`http://localhost:8080/booking/${bookingId}`);
+      await axios.delete(host+`/booking/${bookingId}`);
       setBookings(bookings.filter(booking => booking.id !== bookingId));
       setPopupMessage('Record deleted successfully.');
     } catch (error) {

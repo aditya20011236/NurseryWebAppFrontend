@@ -96,15 +96,7 @@ function Invoice() {
      const latestInvoiceNo =parseInt(InvoiceNum);
      setlatestInvoiceNoA(latestInvoiceNo+ 1);
    
-      // if (formData.invoiceType === "AdvanceBooking") {
-      //   latestInvoiceNo= latestInvoiceNo+ 1;
-      //   setlatestInvoiceNoA(latestInvoiceNo);
-      // }
-      // if (formData.invoiceType === "RegularInvoice") {
-      //   latestInvoiceNo= latestInvoiceNo + 1;
-      //   setlatestInvoiceNoA(latestInvoiceNo);
-        
-      // }
+     
         
       
     } catch (error) {
@@ -736,6 +728,24 @@ function Invoice() {
                 className="appearance-none border rounded w-48 py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               />
             </div>
+            <td className="text-center pl-4">
+                    <label htmlFor="invoiceType" className="block text-gray-700 text-sm font-bold mb-2 dark:text-white">
+                      Invoice Type
+                    </label>
+                    <select
+                      className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                      id="invoiceType"
+                      name="invoiceType"
+                      value={formData.invoiceType}
+                      onChange={(e) => setFormData({ ...formData, invoiceType: e.target.value })}
+                      required
+                    >
+                      <option value="">Select Invoice Type</option>
+                      <option value="RegularInvoice">Regular Invoice</option>
+                      <option value="AdvanceBooking">Advance Booking</option>
+                    </select>
+
+                  </td>
            
 
             <div>
@@ -952,7 +962,7 @@ function Invoice() {
                       <option value="Online">Online</option>
                     </select>
                   </td>
-                  <td className="text-center pl-4">
+                  {/* <td className="text-center pl-4">
                     <label htmlFor="invoiceType" className="block text-gray-700 text-sm font-bold mb-2 dark:text-white">
                       Invoice Type
                     </label>
@@ -969,7 +979,7 @@ function Invoice() {
                       <option value="AdvanceBooking">Advance Booking</option>
                     </select>
 
-                  </td>
+                  </td> */}
                 </tr>
               </tfoot>
             </table>
