@@ -207,6 +207,10 @@ function Invoice() {
       remainingAmount: remainingAmount.toFixed(2),
     }));
   };
+
+ 
+  
+  
   
   const handleAddRow = () => {
     const products = [
@@ -421,7 +425,10 @@ function Invoice() {
 
     const headingX = pdf.internal.pageSize.getWidth() / 2;
     pdf.setFont("bold");
+    pdf.setFontSize(10);
     pdf.text("Invoice", headingX, 10, { align: "center" });
+    
+
 
     const topRightX = pdf.internal.pageSize.getWidth() - 60;
     const topRightY = 10;
@@ -432,9 +439,9 @@ function Invoice() {
     pdf.text("Phone: 9730465591", topRightX, topRightY + 15);
 
     pdf.setTextColor("#000");
-
-    pdf.text(`Invoice to:`, 15, 60);
-    pdf.setFont("normal");
+    pdf.text(`Invoice To:`, 15, 60);
+    
+    
     const customerNameX = 15;
     const customerAddressX = 15;
     pdf.text(`Customer Name: ${formData.customerName}`, customerNameX, 70);
@@ -633,6 +640,37 @@ function Invoice() {
       setFormData({ ...formData, mobileNumber: input });
     } else {
       alert('Please enter a 10 digit numbers only.');
+    }
+  };
+
+//New code
+  const areFieldsFilled = () => {
+    // List of required fields
+    const requiredFields = ["customerName", "customerAddress", "date", "invoiceType", "mobileNumber", "products"];
+    
+    // Check if all required fields have values
+    const allFilled = requiredFields.every(field => {
+      if (field === "products") {
+        // Check if at least one product is added
+        return formData.products.length > 0;
+      } else {
+        // Check if the field has a non-empty value
+        return !!formData[field];
+      }
+    });
+  
+    return allFilled;
+  };
+  
+  // Modify the print button click handler to check if all fields are filled before printing
+  const handlePrintClick = () => {
+    // Check if all required fields are filled
+    if (areFieldsFilled()) {
+      // Call the function to generate PDF
+      generatePDF(calculateTotal(), invoiceNo + 1, formData.customerName);
+    } else {
+      // Display a message to the user indicating that all required fields need to be filled
+      alert("Please fill in all required fields before printing.");
     }
   };
 
@@ -1007,12 +1045,19 @@ function Invoice() {
               >
                 Print
               </button> */}
-              <button
+              {/* <button
                 type="button"
                 className="bg-green-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ml-2"
                 onClick={() =>
                   generatePDF(calculateTotal(), invoiceNo + 1, formData.customerName)
                 }
+              >
+                Print
+              </button> */}
+              <button
+                type="button"
+                className="bg-green-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ml-2"
+                onClick={handlePrintClick} // Change to the new click handler
               >
                 Print
               </button>
