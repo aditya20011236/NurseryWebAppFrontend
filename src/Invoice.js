@@ -155,58 +155,55 @@ function Invoice() {
  
 
   
+  
+
   const handleInputChange = (index, event) => {
     const { name, value } = event.target;
     const products = [...formData.products];
     let total = 0;
-  
+
     if (name === "quantity") {
-      const selectedProductId = products[index].productName;
-      const selectedProduct = productsList.find(product => product.productName === selectedProductId);
-  
-      if (!selectedProduct) {
-        console.error(`Product "${selectedProductId}" not found in productsList`);
-        return;
-      }
-  
-      const availableQuantity = selectedProduct.availableQuantity;
-      const enteredQuantity = parseInt(value);
-      
-  
-  
-      products[index][name] = value;
-      const price = parseFloat(products[index]["price"]);
-      
-      if (!isNaN(price)) {
-        total = (enteredQuantity * price).toFixed(2);
-      }
-  
-      // Deduct the quantity from availableQuantity
-      const updatedProductList = productsList.map(product => {
-        if (product.id === parseInt(selectedProduct.id)) {
-          const remainingQuantity = availableQuantity - enteredQuantity;
-          return {
-            ...product,
-            availableQuantity: remainingQuantity >= 0 ? remainingQuantity : 0
-          };
+        const selectedProductId = products[index].productName;
+        const selectedProduct = productsList.find(product => product.productName === selectedProductId);
+
+        if (!selectedProduct) {
+            console.error(`Product "${selectedProductId}" not found in productsList`);
+            return;
         }
-        return product;
-      });
-      setProductsList(updatedProductList);
+
+        const availableQuantity = selectedProduct.availableQuantity;
+        const enteredQuantity = parseInt(value);
+
+        
+        if (enteredQuantity > 0 && !isNaN(availableQuantity) && enteredQuantity > availableQuantity) {
+            alert(`Quantity cannot exceed available stock quantity of ${availableQuantity}!`);
+            return;
+        }
+
+        products[index][name] = value;
+        const price = parseFloat(products[index]["price"]);
+
+        if (!isNaN(price)) {
+            total = (enteredQuantity * price).toFixed(2);
+        }
     } else {
-      products[index][name] = value;
+       
+        products[index][name] = value;
+        
+      
     }
-  
+
     products[index]["total"] = total;
     setFormData((prevState) => ({ ...prevState, products }));
-  
+
     const grandTotal = calculateTotal();
     const remainingAmount = grandTotal - parseFloat(formData.amountPaid);
     setFormData((prevState) => ({
-      ...prevState,
-      remainingAmount: remainingAmount.toFixed(2),
+        ...prevState,
+        remainingAmount: remainingAmount.toFixed(2),
     }));
-  };
+};
+
 
  
   
@@ -382,20 +379,71 @@ function Invoice() {
       alert("Please Enter the Details of Added Product");
     }
   };
+  // const handlePaymentInputChange = (e) => {
+  //   const { name, value } = e.target;
+  //   if (name === "amountPaid") {
+  //     const remainingAmount = (calculateTotal() - parseFloat(value)).toFixed(2);
+  //     setFormData({ ...formData, amountPaid: value, remainingAmount });
+  //   } else {
+  //     setFormData({ ...formData, [name]: value });
+  //   }
+  // };
+  // const handleConfirmNo = () => {
+  //   setShowConfirmation(false);
+  // };
+  const handleConfirmNo = () => {
+    setShowConfirmation(false);
+  };
+
+  // const handlePaymentInputChange = (e) => {
+  //   const { name, value } = e.target;
+  //   const grandTotal = calculateTotal();
+  //   let remainingAmount;
+    
+  //   if (name === "amountPaid") {
+  //     const enteredAmount = parseFloat(value);
+  //     if (enteredAmount > grandTotal) {
+  //       alert("Please enter an amount less than or equal to the grand total.");
+  //       setFormData({ ...formData, amountPaid: grandTotal.toFixed(2) });
+  //       remainingAmount = 0;
+  //     } else {
+  //       remainingAmount = Math.max(grandTotal - enteredAmount, 0).toFixed(2);
+  //       setFormData({ ...formData, amountPaid: value, remainingAmount });
+  //     }
+  //   } else {
+  //     setFormData({ ...formData, [name]: value });
+  //   }
+  // };
+
   const handlePaymentInputChange = (e) => {
     const { name, value } = e.target;
+    const grandTotal = calculateTotal();
+    let remainingAmount;
+  
     if (name === "amountPaid") {
-      const remainingAmount = (calculateTotal() - parseFloat(value)).toFixed(2);
+      const enteredAmount = parseFloat(value);
+      if (enteredAmount > grandTotal) {
+        alert("Please enter an amount less than or equal to the grand total.");
+        setFormData({ ...formData, amountPaid: grandTotal.toFixed(2), remainingAmount: "0.00" });
+        return;
+      }
+      
+      remainingAmount = (grandTotal - enteredAmount).toFixed(2);
       setFormData({ ...formData, amountPaid: value, remainingAmount });
     } else {
       setFormData({ ...formData, [name]: value });
     }
   };
-  const handleConfirmNo = () => {
-    setShowConfirmation(false);
-  };
+  
+  
+  useEffect(() => {
+    const grandTotal = calculateTotal();
+    setFormData(prevState => ({ ...prevState, amountPaid: grandTotal.toFixed(2) }));
+  }, [formData.products, formData.discount]);
 
-  // const generatePDF = (grandTotal, billNo, customerName) => {
+
+  
+  
   const generatePDF = (grandTotal, invoiceNo, customerName) => {
     const pdf = new jsPDF({
       orientation: "portrait",

@@ -5,7 +5,7 @@ import host from "../util/config";
 function Sl_week() {
   const today = new Date();
   const currentYear = today.getFullYear();
-  const currentMonth = today.toLocaleString('default', { month: 'long' });
+  const currentMonth = today.toLocaleString("default", { month: "long" });
   const currentWeek = `Week ${Math.ceil(today.getDate() / 7)}`;
 
   const [selectedYear, setSelectedYear] = useState(currentYear);
@@ -57,19 +57,16 @@ function Sl_week() {
     }));
   };
 
-  const years = Array.from({ length: 6 }, (_, i) => 2022 + i); // Generate an array of years from 2000 to 2100
+  useEffect(() => {
+    if (startDate && endDate && selectedWeek) {
+      console.log("Fetching data for", startDate, endDate, selectedWeek);
+      fetchData();
+    }
+  }, [startDate, endDate, selectedWeek]);
 
-  const handleYearChange = (event) => {
-    setSelectedYear(event.target.value);
-  };
-
-  const handleMonthChange = (event) => {
-    setSelectedMonth(event.target.value);
-  };
-
-  const handleWeekChange = (event) => {
-    setSelectedWeek(event.target.value);
-  };
+  useEffect(() => {
+    fetchData();
+  }, [selectedWeek]);
 
   useEffect(() => {
     if (selectedYear && selectedMonth) {
@@ -85,53 +82,63 @@ function Sl_week() {
     }
   }, [selectedYear, selectedMonth]);
 
-  useEffect(() => {
-    if (startDate && endDate && selectedWeek) {
-      const selectedMonthObj = months.find(
-        (month) => month.name === selectedMonth
-      );
-      const weeksInMonth = getWeeksInMonth(
-        selectedYear,
-        selectedMonthObj.numerical
-      );
-      const selectedWeekIndex = parseInt(selectedWeek.substring(5)) - 1;
-      setStartDate(
-        weeksInMonth[selectedWeekIndex].startDate.toISOString().split("T")[0]
-      );
-      setEndDate(
-        weeksInMonth[selectedWeekIndex].endDate.toISOString().split("T")[0]
-      );
-    }
-  }, [startDate, endDate, selectedWeek]);
-
-  useEffect(() => {
-    if (startDate && endDate && selectedWeek) {
-      fetchData();
-    }
-  }, [startDate, endDate, selectedWeek]);
-
   const fetchData = async () => {
     try {
-      const response = await axios.get(
-        host + "/api/invoices/getDataBetweenDates",
-        {
-          // const response = await axios.get('http://16.170.242.6:8080/api/invoices/getDataBetweenDates', {
-          params: {
-            startDate,
-            endDate,
-          },
-        }
-      );
+      if (startDate && endDate && selectedWeek) {
+        const response = await axios.get(
+          host + "/api/invoices/getDataBetweenDates",
+          {
+            params: {
+              startDate,
+              endDate,
+            },
+          }
+        );
 
-      setExpanceData(response.data);
-      const total = response.data.reduce(
-        (acc, item) => acc + Number(item.grandtotal),
-        0
-      ); // Assuming total expense is returned from backend
-      setTotalExpenses(total);
+        const filteredData = response.data.filter((expense) => {
+          const expenseDate = new Date(expense.date);
+          return (
+            expenseDate >= new Date(startDate) &&
+            expenseDate <= new Date(endDate)
+          );
+        });
+
+        setExpanceData(filteredData);
+
+        const total = filteredData.reduce(
+          (acc, item) => acc + Number(item.grandtotal),
+          0
+        );
+        setTotalExpenses(total);
+      }
     } catch (error) {
       console.error("Error fetching data:", error);
     }
+  };
+
+  const years = Array.from({ length: 6 }, (_, i) => 2022 + i);
+
+  const handleYearChange = (event) => {
+    setSelectedYear(event.target.value);
+  };
+
+  const handleMonthChange = (event) => {
+    setSelectedMonth(event.target.value);
+  };
+
+  const handleWeekChange = (event) => {
+    const selectedWeekIndex = parseInt(event.target.value.substring(5)) - 1;
+    const weeksInMonth = getWeeksInMonth(
+      selectedYear,
+      months.find((month) => month.name === selectedMonth).numerical
+    );
+    setStartDate(
+      weeksInMonth[selectedWeekIndex].startDate.toISOString().split("T")[0]
+    );
+    setEndDate(
+      weeksInMonth[selectedWeekIndex].endDate.toISOString().split("T")[0]
+    );
+    setSelectedWeek(event.target.value);
   };
 
   return (
@@ -192,7 +199,8 @@ function Sl_week() {
                 months.find((month) => month.name === selectedMonth) &&
                 getWeeksInMonth(
                   selectedYear,
-                  months.find((month) => month.name === selectedMonth).numerical
+                  months.find((month) => month.name === selectedMonth)
+                    .numerical
                 ).map((week, index) => (
                   <option key={index} value={`Week ${index + 1}`}>
                     {week.name}
@@ -220,12 +228,8 @@ function Sl_week() {
               {ExpanceData.map((expense) => (
                 <tr key={expense.id}>
                   <td className="border px-4 py-2 text-center">{expense.id}</td>
-                  <td className="border px-4 py-2 text-center">
-                    {expense.date}
-                  </td>
-                  <td className="border px-4 py-2 text-center">
-                    {expense.grandtotal}
-                  </td>
+                  <td className="border px-4 py-2 text-center">{expense.date}</td>
+                  <td className="border px-4 py-2 text-center">{expense.grandtotal}</td>
                 </tr>
               ))}
             </tbody>

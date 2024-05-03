@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import Header from "./Header";
 import AddProduct from "./AddProduct";
@@ -41,6 +41,7 @@ import InvoiceReport from './InvoiceReport';
 
 
 
+
 function HeaderRouter() {
   const location = useLocation();
   const hideHeader = ['/admin-login', '/register', '/emp_register', '/employee-login'].includes(location.pathname);
@@ -49,6 +50,9 @@ function HeaderRouter() {
 }
 
 function App() {
+  useEffect(() => {
+    document.title = "Shree Samarth Billing Insights";
+  }, []);
   return (
     <>
       <Router>

@@ -3,15 +3,21 @@ import axios from "axios";
 import host from "../util/config";
 
 function Ex_week() {
-  const [selectedYear, setSelectedYear] = useState("");
-  const [selectedMonth, setSelectedMonth] = useState("");
-  const [selectedWeek, setSelectedWeek] = useState("");
-  const [selectedExpenseType, setSelectedExpenseType] = useState("");
-  const [ExpanceData, setExpanceData] = useState([]);
+  const today = new Date();
+  const currentYear = today.getFullYear();
+  const currentMonth = today.toLocaleString("default", { month: "long" });
+  const currentWeek = `Week ${Math.ceil(today.getDate() / 7)}`;
+
+  const [selectedYear, setSelectedYear] = useState(currentYear);
+  const [selectedMonth, setSelectedMonth] = useState(currentMonth);
+  const [selectedWeek, setSelectedWeek] = useState(currentWeek);
+  const [expenseData, setExpenseData] = useState([]);
   const [totalExpenses, setTotalExpenses] = useState(0);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const [selectedDate, setSelectedDate] = useState(""); // Define selectedDate state variable
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [selectedExpenseType, setSelectedExpenseType] = useState("All");
 
   const months = [
     { name: "January", days: 31, numerical: "01" },
@@ -54,36 +60,9 @@ function Ex_week() {
     }));
   };
 
-  const years = Array.from({ length: 6 }, (_, i) => new Date().getFullYear() + i);
-  const today = new Date();
-  const todayMonth = months[today.getMonth()].name;
-  const todayWeek = `Week ${Math.ceil(today.getDate() / 7)}`;
-
   useEffect(() => {
-    setSelectedYear(String(today.getFullYear()));
-    setSelectedMonth(todayMonth);
-    setSelectedWeek(todayWeek);
-  }, []);
-
-  const handleYearChange = (event) => {
-    setSelectedYear(event.target.value);
-  };
-
-  const handleMonthChange = (event) => {
-    setSelectedMonth(event.target.value);
-  };
-
-  const handleWeekChange = (event) => {
-    setSelectedWeek(event.target.value);
-  };
-
-  const handleExpenseTypeChange = (event) => {
-    setSelectedExpenseType(event.target.value);
-  };
-
-  const handleDateChange = (event) => {
-    setSelectedDate(event.target.value);
-  };
+    fetchData();
+  }, [startDate, endDate, selectedWeek, selectedExpenseType]); // Add selectedExpenseType as a dependency
 
   useEffect(() => {
     if (selectedYear && selectedMonth) {
@@ -99,53 +78,60 @@ function Ex_week() {
     }
   }, [selectedYear, selectedMonth]);
 
-  useEffect(() => {
-    if (startDate && endDate && selectedWeek) {
-      const selectedMonthObj = months.find(
-        (month) => month.name === selectedMonth
-      );
-      const weeksInMonth = getWeeksInMonth(
-        selectedYear,
-        selectedMonthObj.numerical
-      );
-      const selectedWeekIndex = parseInt(selectedWeek.substring(5)) - 1;
-      setStartDate(
-        weeksInMonth[selectedWeekIndex].startDate.toISOString().split("T")[0]
-      );
-      setEndDate(
-        weeksInMonth[selectedWeekIndex].endDate.toISOString().split("T")[0]
-      );
-    }
-  }, [startDate, endDate, selectedWeek]);
-
-  useEffect(() => {
-    if (startDate && endDate && selectedWeek) {
-      fetchData();
-    }
-  }, [startDate, endDate, selectedWeek, selectedExpenseType]);
-
   const fetchData = async () => {
     try {
-      const response = await axios.get(
-        host + "/api/expenses/getDataBetweenDates",
-        {
-          params: {
-            startDate,
-            endDate,
-            expenseType: selectedExpenseType, // Pass selected expense type to the API
-          },
-        }
-      );
+      if (startDate && endDate && selectedWeek) {
+        setLoading(true);
+        const response = await axios.get(
+          `${host}/api/expenses/getDataBetweenDates`,
+          {
+            params: {
+              startDate,
+              endDate,
+              expenseType: selectedExpenseType.toLowerCase(),
+            },
+          }
+        );
 
-      setExpanceData(response.data);
-      const total = response.data.reduce(
-        (acc, item) => acc + Number(item.grandTotal),
-        0
-      );
-      setTotalExpenses(total);
+        setExpenseData(response.data);
+
+        const total = response.data.reduce(
+          (acc, item) => acc + Number(item.grandTotal),
+          0
+        );
+        setTotalExpenses(total);
+        setLoading(false);
+      }
     } catch (error) {
       console.error("Error fetching data:", error);
+      setError("Error fetching data. Please try again later.");
+      setLoading(false);
     }
+  };
+
+  const years = Array.from({ length: 6 }, (_, i) => 2022 + i);
+
+  const handleYearChange = (event) => {
+    setSelectedYear(event.target.value);
+  };
+
+  const handleMonthChange = (event) => {
+    setSelectedMonth(event.target.value);
+  };
+
+  const handleWeekChange = (event) => {
+    const selectedWeekIndex = parseInt(event.target.value.substring(5)) - 1;
+    const weeksInMonth = getWeeksInMonth(
+      selectedYear,
+      months.find((month) => month.name === selectedMonth).numerical
+    );
+    setStartDate(
+      weeksInMonth[selectedWeekIndex].startDate.toISOString().split("T")[0]
+    );
+    setEndDate(
+      weeksInMonth[selectedWeekIndex].endDate.toISOString().split("T")[0]
+    );
+    setSelectedWeek(event.target.value);
   };
 
   return (
@@ -206,7 +192,8 @@ function Ex_week() {
                 months.find((month) => month.name === selectedMonth) &&
                 getWeeksInMonth(
                   selectedYear,
-                  months.find((month) => month.name === selectedMonth).numerical
+                  months.find((month) => month.name === selectedMonth)
+                    .numerical
                 ).map((week, index) => (
                   <option key={index} value={`Week ${index + 1}`}>
                     {week.name}
@@ -214,51 +201,57 @@ function Ex_week() {
                 ))}
             </select>
           </div>
-        </div>
-        <div className="flex items-center mb-4">
-          <select
-            value={selectedExpenseType}
-            onChange={handleExpenseTypeChange}
-            className="rounded-r-md border border-gray-300 focus:outline-none px-3 py-2 ml-2"
-          >
-            <option value="">All</option>
-            <option value="Employee">Employee</option>
-            <option value="Routine">Routine</option>
-            <option value="Capital">Capital</option>
-            <option value="Raw_material">Raw Material</option>
-          </select>
+          <div>
+            <label htmlFor="expenseTypeSelect" className="mb-2 pl-3">
+              Expense Type:
+            </label>
+            <select
+              id="expenseTypeSelect"
+              value={selectedExpenseType}
+              onChange={(e) => setSelectedExpenseType(e.target.value)}
+              className="border border-gray-300 rounded-md px-3 py-2 ml-3 w-full focus:outline-none"
+            >
+              <option value="">All</option>
+              <option value="Employee">Employee</option>
+              <option value="Routine">Routine</option>
+              <option value="Raw_material">RawMaterial</option>
+              <option value="Capital">Capital</option>
+            </select>
+          </div>
         </div>
         {selectedWeek && startDate && endDate && (
           <p>{`Start Date of ${selectedWeek} is "${startDate}" and End Date of ${selectedWeek} is "${endDate}"`}</p>
         )}
       </div>
-      {selectedWeek && startDate && endDate && (
-        <div className="max-w-4xl mt-8 bg-white shadow-md rounded-md justify-center items-center overflow-x-auto">
-          <h2 className="text-xl font-semibold p-4">Expense Data</h2>
-          <table className="w-full table-auto">
-            <thead>
-              <tr>
-                <th className="px-4 py-2">ID</th>
-                <th className="px-4 py-2">Date</th>
-                <th className="px-4 py-2">Expense</th>
-              </tr>
-            </thead>
-            <tbody>
-              {ExpanceData.map((expense) => (
-                <tr key={expense.id}>
-                  <td className="border px-4 py-2 text-center">{expense.id}</td>
-                  <td className="border px-4 py-2 text-center">
-                    {expense.date}
-                  </td>
-                  <td className="border px-4 py-2 text-center">
-                    {expense.grandTotal}
-                  </td>
+      {loading ? (
+        <p>Loading...</p>
+      ) : error ? (
+        <p>Error: {error}</p>
+      ) : (
+        selectedWeek && startDate && endDate && (
+          <div className="max-w-4xl mt-8 bg-white shadow-md rounded-md justify-center items-center overflow-x-auto">
+            <h2 className="text-xl font-semibold p-4">Expense Data</h2>
+            <table className="w-full table-auto">
+              <thead>
+                <tr>
+                  <th className="px-4 py-2">ID</th>
+                  <th className="px-4 py-2">Date</th>
+                  <th className="px-4 py-2">Expense</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-          <p className="p-4">Total Expenses: {totalExpenses.toFixed(2)}</p>
-        </div>
+              </thead>
+              <tbody>
+                {expenseData.map((expense) => (
+                  <tr key={expense.id}>
+                    <td className="border px-4 py-2 text-center">{expense.id}</td>
+                    <td className="border px-4 py-2 text-center">{expense.date}</td>
+                    <td className="border px-4 py-2 text-center">{expense.grandTotal}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <p className="p-4">Total Sales: {totalExpenses.toFixed(2)}</p>
+          </div>
+        )
       )}
     </div>
   );
