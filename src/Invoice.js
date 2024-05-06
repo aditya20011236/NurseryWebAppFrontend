@@ -1,10 +1,9 @@
-
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 import Logo from "./Logo.png";
-import SignatureImage from "./Signpdf.jpg";
+import SignatureImage from "./Resource/E-SIGNATURE.png";
 import { v4 as uuidv4 } from "uuid";
 import Menu from "./Sidebar";
 import host from "./util/config";
@@ -28,9 +27,9 @@ function Invoice() {
     ],
     amountPaid: "",
     remainingAmount: "",
-    paymentMode: "",
+    paymentMode: "CASH",
     discount: "",
-    invoiceType: "",
+    invoiceType: "RegularInvoice",
   };
   const [invoiceType, setInvoiceType] = useState("");
   //const [invoiceNo, setInvoiceNo] = useState(0);
@@ -42,6 +41,7 @@ function Invoice() {
   const [availableQuantity, setAvailableQuantity] = useState(0);
   const [invoiceNo, setlatestInvoiceNoA] = useState([]);
 
+ 
   console.log(invoiceNo);
   useEffect(() => {
     fetchLatestInvoiceNo();
@@ -134,18 +134,18 @@ function Invoice() {
         products[index]["quantity"] = availableQuantity.toString();
         setFormData((prevState) => ({ ...prevState, products }));
   
-        if (formData.invoiceType === "AdvanceBooking") {
-          const updatedProductList = productsList.map(product => {
-            if (product.id === parseInt(productId)) {
-              return {
-                ...product,
-                availableQuantity: availableQuantity - parseInt(products[index]["quantity"])
-              };
-            }
-            return product;
-          });
-          setProductsList(updatedProductList);
-        }
+        // if (formData.invoiceType === "AdvanceBooking") {
+        //   const updatedProductList = productsList.map(product => {
+        //     if (product.id === parseInt(productId)) {
+        //       return {
+        //         ...product,
+        //         availableQuantity: availableQuantity - parseInt(products[index]["quantity"])
+        //       };
+        //     }
+        //     return product;
+        //   });
+        //   setProductsList(updatedProductList);
+        // }
       }
     }
   };
@@ -161,7 +161,7 @@ function Invoice() {
     const { name, value } = event.target;
     const products = [...formData.products];
     let total = 0;
-
+  
     if (name === "quantity") {
         const selectedProductId = products[index].productName;
         const selectedProduct = productsList.find(product => product.productName === selectedProductId);
@@ -175,7 +175,7 @@ function Invoice() {
         const enteredQuantity = parseInt(value);
 
         
-        if (enteredQuantity > 0 && !isNaN(availableQuantity) && enteredQuantity > availableQuantity) {
+        if (enteredQuantity > 0 && !isNaN(availableQuantity) && enteredQuantity > availableQuantity && formData.invoiceType === "RegularInvoice" ) {
             alert(`Quantity cannot exceed available stock quantity of ${availableQuantity}!`);
             return;
         }
@@ -192,6 +192,7 @@ function Invoice() {
         
       
     }
+    
 
     products[index]["total"] = total;
     setFormData((prevState) => ({ ...prevState, products }));
@@ -379,41 +380,12 @@ function Invoice() {
       alert("Please Enter the Details of Added Product");
     }
   };
-  // const handlePaymentInputChange = (e) => {
-  //   const { name, value } = e.target;
-  //   if (name === "amountPaid") {
-  //     const remainingAmount = (calculateTotal() - parseFloat(value)).toFixed(2);
-  //     setFormData({ ...formData, amountPaid: value, remainingAmount });
-  //   } else {
-  //     setFormData({ ...formData, [name]: value });
-  //   }
-  // };
-  // const handleConfirmNo = () => {
-  //   setShowConfirmation(false);
-  // };
+  
   const handleConfirmNo = () => {
     setShowConfirmation(false);
   };
 
-  // const handlePaymentInputChange = (e) => {
-  //   const { name, value } = e.target;
-  //   const grandTotal = calculateTotal();
-  //   let remainingAmount;
-    
-  //   if (name === "amountPaid") {
-  //     const enteredAmount = parseFloat(value);
-  //     if (enteredAmount > grandTotal) {
-  //       alert("Please enter an amount less than or equal to the grand total.");
-  //       setFormData({ ...formData, amountPaid: grandTotal.toFixed(2) });
-  //       remainingAmount = 0;
-  //     } else {
-  //       remainingAmount = Math.max(grandTotal - enteredAmount, 0).toFixed(2);
-  //       setFormData({ ...formData, amountPaid: value, remainingAmount });
-  //     }
-  //   } else {
-  //     setFormData({ ...formData, [name]: value });
-  //   }
-  // };
+ 
 
   const handlePaymentInputChange = (e) => {
     const { name, value } = e.target;
@@ -436,10 +408,10 @@ function Invoice() {
   };
   
   
-  useEffect(() => {
-    const grandTotal = calculateTotal();
-    setFormData(prevState => ({ ...prevState, amountPaid: grandTotal.toFixed(2) }));
-  }, [formData.products, formData.discount]);
+  // useEffect(() => {
+  //   const grandTotal = calculateTotal();
+  //   setFormData(prevState => ({ ...prevState, amountPaid: grandTotal.toFixed(2) }));
+  // }, [formData.products, formData.discount]);
 
 
   
@@ -450,6 +422,8 @@ function Invoice() {
       unit: "mm",
       format: "a4",
     });
+
+    
     const fontSize = 10;
     pdf.setFontSize(fontSize);
     // pdf.setFont('Helvetica');
@@ -482,9 +456,11 @@ function Invoice() {
     const topRightY = 10;
     pdf.setFont("bold");
     pdf.text("Shree Samarth Nursury", topRightX, topRightY);
-    pdf.text("Nira-Lonand Road, At.Po,Padegaon", topRightX, topRightY + 5);
+    pdf.text("Padalkar Vasti, At.Po,Sukhed", topRightX, topRightY + 5);
     pdf.text("Tal. Khandala, Dist. Satara, 415521", topRightX, topRightY + 10);
-    pdf.text("Phone: 9730465591", topRightX, topRightY + 15);
+    pdf.text("Phone 1: 9096307463", topRightX, topRightY + 15);
+    pdf.text("Phone 2: 9545034747", topRightX, topRightY + 20);
+    
 
     pdf.setTextColor("#000");
     pdf.text(`Invoice To:`, 15, 60);
@@ -639,29 +615,34 @@ function Invoice() {
 
     pdf.text("Bank Details", 15, bankDetailsY + 10);
     pdf.setFont("normal");
-    pdf.text("Name: BANK OF BARODA", 15, bankDetailsY + 15);
-    pdf.text("Account No: 04440200000597", 15, bankDetailsY + 20);
-    pdf.text("IFSC code: BARB0LONAND", 15, bankDetailsY + 25);
+    pdf.text("Name: BANK OF BARODA", 15, bankDetailsY + 20);
+    pdf.text("Account No: 04440200000597", 15, bankDetailsY + 25);
+    pdf.text("IFSC code: BARB0LONAND", 15, bankDetailsY + 30);
     pdf.setFont("bold");
+    // pdf.text(
+    //   "For:Shree Samarth Nursury",
+    //   pdf.internal.pageSize.width - 80,
+    //   bankDetailsY + 10
+    // );
     pdf.text(
-      "For:Shree Samarth Nursury",
-      pdf.internal.pageSize.width - 80,
+      "E-SIGNATURE DR.BAPURAO CHOPADE",
+      pdf.internal.pageSize.width - 86,
       bankDetailsY + 10
     );
     pdf.addImage(
       SignatureImage,
-      "JPG",
+      "PNG",
       pdf.internal.pageSize.width - 80,
       bankDetailsY + 15,
-      30,
-      15
+      50,
+      25
     );
-    pdf.setFontSize(10);
-    pdf.text(
-      "Authorized Signature",
-      pdf.internal.pageSize.width - 75,
-      bankDetailsY + 36
-    );
+    // pdf.setFontSize(10);
+    // pdf.text(
+    //   "Authorized Signature",
+    //   pdf.internal.pageSize.width - 75,
+    //   bankDetailsY + 36
+    // );
 
     const additionalMessage = "This is Computer generated bill.";
     const additionalMessageWidth =
@@ -721,7 +702,6 @@ function Invoice() {
       alert("Please fill in all required fields before printing.");
     }
   };
-
   return (
 
     <div className="relative bg-green-500" >
@@ -799,39 +779,39 @@ function Invoice() {
                 required
               />
             </div>
-
             <div>
-              <label htmlFor="date" className="block text-gray-700 text-sm font-bold mb-2 dark:text-white">Date:</label>
-              <input
-                type="date"
-                id="date"
-                name="date"
-                value={formData.date}
-                onChange={(e) =>
-                  setFormData({ ...formData, date: e.target.value })
-                }
-                max={new Date().toISOString().split("T")[0]}
-                className="appearance-none border rounded w-48 py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              />
-            </div>
-            <td className="text-center pl-4">
-                    <label htmlFor="invoiceType" className="block text-gray-700 text-sm font-bold mb-2 dark:text-white">
-                      Invoice Type
-                    </label>
-                    <select
-                      className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                      id="invoiceType"
-                      name="invoiceType"
-                      value={formData.invoiceType}
-                      onChange={(e) => setFormData({ ...formData, invoiceType: e.target.value })}
-                      required
-                    >
-                      <option value="">Select Invoice Type</option>
-                      <option value="RegularInvoice">Regular Invoice</option>
-                      <option value="AdvanceBooking">Advance Booking</option>
-                    </select>
+  <label htmlFor="date" className="block text-gray-700 text-sm font-bold mb-2 dark:text-white">Bill Date:</label>
+  <input
+    type="date"
+    id="date"
+    name="date"
+    value={formData.date}
+    onChange={(e) =>
+      setFormData({ ...formData, date: e.target.value })
+    }
+    className="appearance-none border rounded w-48 py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+  />
+</div>
 
-                  </td>
+
+           
+    <td className="text-center pl-4">
+  <label htmlFor="invoiceType" className="block text-gray-700 text-sm font-bold mb-2 dark:text-white">
+    Invoice Type
+  </label>
+  <select
+    className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+    id="invoiceType"
+    name="invoiceType"
+    value={formData.invoiceType}
+    onChange={(e) => setFormData({ ...formData, invoiceType: e.target.value })}
+    required
+  >
+    <option value="RegularInvoice">Regular Invoice</option>
+    <option value="AdvanceBooking">Advance Booking</option>
+  </select>
+</td>
+
            
 
             <div>
@@ -1043,29 +1023,14 @@ function Invoice() {
                       value={formData.paymentMode}
                       onChange={handlePaymentInputChange}
                     >
-                      <option value="">Select Payment Mode</option>
-                      <option value="Cash">Cash</option>
-                      <option value="Online">Online</option>
+                      
+                      <option value="CASH">CASH</option>
+                      <option value="UPI/NETBANKING">UPI / NETBANKING</option>
+                      <option value="CHEQUE">CHEQUE</option>
+                      <option value="BANK/NEFT/IMPS/RTGS">BANK (NEFT/IMPS/RTGS)</option>
                     </select>
                   </td>
-                  {/* <td className="text-center pl-4">
-                    <label htmlFor="invoiceType" className="block text-gray-700 text-sm font-bold mb-2 dark:text-white">
-                      Invoice Type
-                    </label>
-                    <select
-                      className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                      id="invoiceType"
-                      name="invoiceType"
-                      value={formData.invoiceType}
-                      onChange={(e) => setFormData({ ...formData, invoiceType: e.target.value })}
-                      required
-                    >
-                      <option value="">Select Invoice Type</option>
-                      <option value="RegularInvoice">Regular Invoice</option>
-                      <option value="AdvanceBooking">Advance Booking</option>
-                    </select>
-
-                  </td> */}
+                  
                 </tr>
               </tfoot>
             </table>
@@ -1084,24 +1049,7 @@ function Invoice() {
               >
                 Submit
               </button>
-              {/* <button
-                type="button"
-                className="bg-green-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded ml-2"
-                onClick={() =>
-                  generatePDF(calculateTotal(), invoiceNo, formData.customerName)
-                }
-              >
-                Print
-              </button> */}
-              {/* <button
-                type="button"
-                className="bg-green-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ml-2"
-                onClick={() =>
-                  generatePDF(calculateTotal(), invoiceNo + 1, formData.customerName)
-                }
-              >
-                Print
-              </button> */}
+
               <button
                 type="button"
                 className="bg-green-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ml-2"
