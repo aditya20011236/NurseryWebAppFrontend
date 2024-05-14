@@ -10,6 +10,8 @@ const ShowBooking = () => {
   const [loading, setLoading] = useState(true);
   const [expandedBooking, setExpandedBooking] = useState(null);
   const [popupMessage, setPopupMessage] = useState(null);
+  const [invoiceNo, setlatestInvoiceNoA] = useState([]);
+ 
 
   useEffect(() => {
     const fetchData = async () => {
@@ -31,18 +33,148 @@ const ShowBooking = () => {
     setExpandedBooking(expandedBooking === bookingId ? null : bookingId);
   };
 
-  const handleDelivery = async (bookingId) => {
+  useEffect(() =>{
+  const fetchLatestInvoiceNo = async () => {
     try {
-      console.log('Deleting booking with ID:', bookingId); // Log bookingId
-      await axios.delete(host+`/booking/${bookingId}`);
-      setBookings(bookings.filter(booking => booking.id !== bookingId));
-      setPopupMessage('Record deleted successfully.');
+      const response = await axios.get(host + "/api/invoices/latest");
+    
+     const InvoiceNum =  response.data;
+     const latestInvoiceNo =parseInt(InvoiceNum);
+     setlatestInvoiceNoA(latestInvoiceNo+ 1);
+     
+     
+        
+      
     } catch (error) {
-      console.error('Error deleting booking:', error);
-      setError(`Error deleting booking: ${error.message}`);
+      console.error("Error fetching latest invoice number:", error);
     }
   };
+  fetchLatestInvoiceNo();
+}, []);
+
   
+// const handleDelivery = async (bookingId) => {
+//   try {
+//     console.log('Fetching booking data with ID:', bookingId); // Log bookingId
+//     const response = await axios.get(host + `/booking/${bookingId}`);
+//     const advanceBookingData = response.data; // Assuming the data fetched is the advance booking data
+//     console.log('Advance Booking Data:', advanceBookingData);
+
+//     // Adding status field to the booking data
+//     const updatedBookingData = {
+//       ...advanceBookingData,
+//       invoiceType: 'closed_booking',
+//       status: 'delivered',
+//       id: invoiceNo
+//     };
+
+//     // Now you can post the advance booking data to your desired endpoint
+//     await axios.post(host + "/api/invoices", updatedBookingData);
+
+//     // Optionally, you can remove the booking from the UI after successful posting
+//     setBookings(bookings.filter(booking => booking.id !== bookingId));
+
+//     setPopupMessage('Record posted successfully.');
+//   } catch (error) {
+//     console.error('Error posting advance booking:', error);
+//     setError(`Error posting advance booking: ${error.message}`);
+//   }
+// };
+
+
+const handleDelivery = async (bookingId) => {
+  try {
+    console.log('Fetching booking data with ID:', bookingId);
+    const response = await axios.get(host + `/booking/${bookingId}`);
+    const advanceBookingData = response.data;
+
+    // Deduct quantity from products API
+    for (const product of advanceBookingData.products) {
+      if (!product.productId) {
+        console.warn('Skipping product deduction: productId is null or undefined.');
+        continue; // Skip this product and continue to the next one
+      }
+
+      try {
+        await axios.put(host + `/products/deductQuantity`, {
+          productId: product.productId,
+          quantity: product.quantity
+        });
+      } catch (error) {
+        console.error('Error deducting quantity:', error.response ? error.response.data : error.message);
+        throw new Error('Error deducting quantity. Please try again later.');
+      }
+    }
+
+    // Adding status field to the booking data
+    const updatedBookingData = {
+      ...advanceBookingData,
+      invoiceType: 'closed_booking',
+      status: 'delivered',
+      id: invoiceNo
+    };
+
+    // Now you can post the advance booking data to your desired endpoint
+    await axios.post(host + "/api/invoices", updatedBookingData);
+
+    // Optionally, you can remove the booking from the UI after successful posting
+    setBookings(bookings.filter(booking => booking.id !== bookingId));
+
+    setPopupMessage('Record posted successfully.');
+  } catch (error) {
+    console.error('Error posting advance booking:', error);
+    setError(`Error posting advance booking: ${error.message}`);
+  }
+};
+
+
+const handleCancellation = async (bookingId) => {
+  try {
+    console.log('Fetching booking data with ID:', bookingId);
+    const response = await axios.get(host + `/booking/${bookingId}`);
+    const advanceBookingData = response.data;
+
+    // Generate random 3-digit code
+    const randomCode = Math.floor(100 + Math.random() * 900);
+
+    // Display pop-up to enter code
+    const enteredCode = prompt(`Enter the following code: ${randomCode}`);
+    if (enteredCode !== null && enteredCode === randomCode.toString()) {
+      const eligibleForRefund = window.confirm('Does the customer eligible for a refund?');
+      if (eligibleForRefund) {
+        const refundAmount = prompt('Enter refund amount:');
+        if (refundAmount !== null) {
+          const updatedAmountPaid = advanceBookingData.amountPaid - parseFloat(refundAmount);
+          const updatedData = {
+            ...advanceBookingData,
+            invoiceType: 'canceled_booking',
+            status: 'canceled',
+            amountPaid: updatedAmountPaid < 0 ? 0 : updatedAmountPaid
+          };
+
+          // Post updated data to API
+          await axios.post(host + "/api/invoices", updatedData);
+          setPopupMessage('Booking canceled successfully.');
+        }
+      } else {
+        // If not eligible for refund, post data directly to API
+        await axios.post(host + "/api/invoices", {
+          ...advanceBookingData,
+          invoiceType: 'canceled_booking',
+          status: 'canceled'
+        });
+        setPopupMessage('Booking canceled successfully.');
+      }
+    } else {
+      setPopupMessage('You entered the wrong code. Try again later.');
+    }
+  } catch (error) {
+    console.error('Error canceling booking:', error);
+    setError(`Error canceling booking: ${error.message}`);
+  }
+};
+
+
 
   const renderAdditionalDetails = (booking) => {
     if (expandedBooking === booking.id) {
@@ -132,6 +264,7 @@ const ShowBooking = () => {
                         <td className="px-4 py-2 border text-center">
                           <button onClick={() => toggleDetails(booking.id)} className="bg-green-500 hover:bg-green-500 text-white font-bold py-2 px-4 rounded mb-2 focus:outline-none focus:shadow-outline">Order Details</button>
                           <button onClick={() => handleDelivery(booking.id)} className="bg-red-500 hover:bg-red-500 text-white font-bold py-2 px-4 rounded mb-2 focus:outline-none focus:shadow-outline">Delivered</button>
+                          <button onClick={() => handleCancellation(booking.id)} className="bg-yellow-500 hover:bg-yellow-500 text-white font-bold py-2 px-4 rounded mb-2 focus:outline-none focus:shadow-outline">Cancel</button>
                         </td>
                       </tr>
                       {renderAdditionalDetails(booking)}

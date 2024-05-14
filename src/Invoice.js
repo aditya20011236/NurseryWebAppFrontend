@@ -48,6 +48,7 @@ function Invoice() {
     fetchProducts();
 
   }, []);
+  
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     const day = date.getDate().toString().padStart(2, '0');
@@ -134,18 +135,7 @@ function Invoice() {
         products[index]["quantity"] = availableQuantity.toString();
         setFormData((prevState) => ({ ...prevState, products }));
   
-        // if (formData.invoiceType === "AdvanceBooking") {
-        //   const updatedProductList = productsList.map(product => {
-        //     if (product.id === parseInt(productId)) {
-        //       return {
-        //         ...product,
-        //         availableQuantity: availableQuantity - parseInt(products[index]["quantity"])
-        //       };
-        //     }
-        //     return product;
-        //   });
-        //   setProductsList(updatedProductList);
-        // }
+    
       }
     }
   };
@@ -336,7 +326,9 @@ function Invoice() {
           await axios.post(host + "/api/invoices", {
             ...invoiceData,
             mobileNumber: formData.mobileNumber,
-            grandTotal: grandTotal 
+            grandTotal: grandTotal ,
+            status: 'delivered',
+            invoiceType: 'regular_invoice',
           });
   
           generatePDF(grandTotal, invoiceNo, formData.customerName);
@@ -349,7 +341,8 @@ function Invoice() {
           await axios.post(host + "/saveadvanceBooking", {
             ...invoiceData,  
             mobileNumber: formData.mobileNumber,
-            grandTotal: grandTotal 
+            grandTotal: grandTotal, 
+            invoiceType: 'advanced_booking',
           });
           generatePDF(grandTotal, invoiceNo, formData.customerName);
           alert("Advance Booking submitted successfully!");
